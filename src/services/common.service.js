@@ -1,11 +1,11 @@
 import axios from "axios";
-import {APP_URL} from '../action/common';
+import {API_URL} from '../action/common';
 
 export const saveCategory=async(parmas)=>{
     try{
-       return axios.post(APP_URL+"saveCategory",parmas)
+       return axios.post(API_URL+"category",parmas)
        .then((result)=>{
-        
+            console.log(result);
        })
     }
     catch(e){

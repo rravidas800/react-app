@@ -45,7 +45,7 @@ const Login=()=>{
             .then(result=>{
                 if(result.status==200)
                 {   setLoginDetails(updateLoginDetails,{type:LOGIN,data:result});
-                    navigate("/dashboard");
+                    navigate("/admin/dashboard");
                 }else{
                     setErrorMessage(result.message);
                 }

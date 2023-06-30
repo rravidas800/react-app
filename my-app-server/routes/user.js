@@ -100,4 +100,35 @@ router.post("/login",(req,res,next)=>{
     
 })
 
+router.post("/verifytoken",(req,res,next)=>{
+    let accessToken=req.body.accessToken;
+    jwt.verify(accessToken,'secret',(err,decode)=>{
+        if(err)
+        {
+            return res.status(200).json({
+                status:"failed",
+                result:"expired"
+            })
+        }else{
+            const token=jwt.sign({
+                data:decode.data
+            },'secret',{expiresIn:60*60});
+
+            if(token)
+            {
+                return res.status(200).json({
+                    status:"200",
+                    accessToken:token
+                })
+            }else{
+                return res.status(200).json({
+                    status:"failed",
+                    result:"expired"
+                })
+            }
+            
+        }
+    })
+})
+
 module.exports=router;

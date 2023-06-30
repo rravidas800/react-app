@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import { Form, Nav, Row } from "react-bootstrap";
 import Col from 'react-bootstrap/Col';
 import { getLocalStorageData } from "../../action/common";
+import {saveCategory} from '../../services/common.service'; 
 
 const  Category=()=>{
 
@@ -16,6 +17,8 @@ const  Category=()=>{
             "category":category,
             "accessToken":localStorageData.accessToken
         }
+console.log(formData);
+        //saveCategory(formData);
         
     }
 
