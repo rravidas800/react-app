@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
-import { Form, Nav, Row } from "react-bootstrap";
+import { Alert, Form, Nav, Row } from "react-bootstrap";
 import Col from 'react-bootstrap/Col';
-import { getLocalStorageData } from "../../action/common";
+import { getLocalStorageData, useRedirect } from "../../action/common";
 import {saveCategory} from '../../services/common.service'; 
+import { useNavigate } from "react-router-dom";
+
 
 const  Category=()=>{
 
+    let { handleRedirect } =useRedirect();
+    const navigate=useNavigate();
     const [category,setCategory]=useState("");
+    const [errorMessage,setErrorMessage]=useState("");
 
     const saveCategoy=(e)=>{
         e.preventDefault();
@@ -17,23 +22,29 @@ const  Category=()=>{
             "category":category,
             "accessToken":localStorageData.accessToken
         }
-console.log(formData);
-        //saveCategory(formData);
+        saveCategory(formData)
+        .then(result=>{
+            navigate('view',{state:{"status":"success"}});
+        })
+        .catch(err=>{
+            setErrorMessage("Failed to save record");
+        });
         
     }
 
     return (<div>
                 <Nav variant="tabs" defaultActiveKey="/home">
                     <Nav.Item>
-                        <Nav.Link active to={"/admin/master/category"}>Manage Category</Nav.Link>
+                        <Nav.Link active  >Manage Category</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link  to={"/admin/master/category/view"}>View Category</Nav.Link>
+                        <Nav.Link  onClick={()=>{ handleRedirect("/admin/master/category/view") }}>View Category</Nav.Link>
                     </Nav.Item>
                 </Nav>
                 <div className="p-5">
                     <Row className="justify-content-md-center">
                         <Col lg="8">
+                        { errorMessage.length>0 &&  <div><Alert variant="danger" >{errorMessage }</Alert></div> }  
                             <Form method="post"  onSubmit={saveCategoy}>
                                     <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
                                         <Form.Label column sm={4}>Category</Form.Label>

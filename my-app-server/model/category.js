@@ -6,3 +6,5 @@ const CategorySchema=new mongoose.Schema({
     "deleted":{ type:Boolean,default:0},
     "createdOn":{type:Date,default:Date.now}
 })
+
+module.exports=mongoose.model("Category",CategorySchema); 

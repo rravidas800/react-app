@@ -1,5 +1,6 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { verifyAccessToken } from "../../action/common";
 
 export default ({children})=>{
 
@@ -7,6 +8,7 @@ export default ({children})=>{
     
     try
     {
+        verifyAccessToken();
         const userData=JSON.parse(userSessionData);
        
         if(userData._id.length>0)

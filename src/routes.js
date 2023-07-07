@@ -1,6 +1,7 @@
 import Dashboard from "./Admin/Dashboard";
 import Login from "./Admin/Login"
 import Category from "./Admin/master/Category";
+import ViewCategory from "./Admin/master/ViewCategory";
 import AuthLogin from "./Admin/middleware/AuthLogin"
 import ProtectedRoutes from "./Admin/middleware/protected.routes"
 import { AppProvider } from './contaxts/AppContaxt';
@@ -31,7 +32,10 @@ export const AppRoutes =()=>{
             children:[{
                 path:"category",
                 element:<ProtectedRoutes><Category/></ProtectedRoutes>
-                }]
+                },{
+                  path:"category/view",
+                  element:<ProtectedRoutes><ViewCategory/></ProtectedRoutes>
+                  }]
         }]
         
     },
