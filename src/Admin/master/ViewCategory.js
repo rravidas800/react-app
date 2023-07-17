@@ -77,7 +77,7 @@ const ViewCategory=()=>{
                               return  <tr key={i}>
                                     <td>{++i}</td>
                                     <td>{val.category}</td>
-                                    <td align="center"><Link to="">Edit</Link></td>
+                                    <td align="center"><Link to={`/admin/master/category/edit/${val._id}`} >Edit</Link></td>
                                     <td align="center"><Link to="">Delete</Link></td>
                                 </tr>
                             }): <tr key={i}><td colSpan={4} align="center">No Record Found!</td></tr> }

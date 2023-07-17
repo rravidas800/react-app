@@ -35,7 +35,12 @@ export const AppRoutes =()=>{
                 },{
                   path:"category/view",
                   element:<ProtectedRoutes><ViewCategory/></ProtectedRoutes>
-                  }]
+                  },
+                  {
+                    path:"category/edit/:id",
+                    element:<ProtectedRoutes><ViewCategory/></ProtectedRoutes>
+                  }
+                ]
         }]
         
     },
