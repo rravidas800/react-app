@@ -38,7 +38,7 @@ export const AppRoutes =()=>{
                   },
                   {
                     path:"category/edit/:id",
-                    element:<ProtectedRoutes><ViewCategory/></ProtectedRoutes>
+                    element:<ProtectedRoutes><Category/></ProtectedRoutes>
                   }
                 ]
         }]

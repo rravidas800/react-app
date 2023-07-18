@@ -7,7 +7,7 @@ export const saveCategory=async(parmas)=>{
        .then((result)=>{
            if(result.data.status==='success')
            {
-                return true;
+                return result.data;
            }else{
                 return false;
            }
@@ -37,6 +37,27 @@ export const getAllCategory=async(parmas)=>{
        })
     }
     catch(e){
+        return false;
+    }
+}
+
+export const deleteCategoryById=async(params)=>{
+    try{
+        return await axios.post(API_URL+"category/delete",params)
+        .then(result=>{
+            if(result.data.status=='success')
+            {
+                return result.data;
+            }else{
+                return false;
+            }
+        })
+        .catch(err=>{
+            return false;
+        })
+    }
+    catch(e)
+    {
         return false;
     }
 }

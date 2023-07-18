@@ -16,15 +16,15 @@ const Header=(props)=>{
     
            <Navbar bg="primary" variant="dark">
                 <Container>
-                <Navbar.Brand href='javascript:void(0);' onClick={()=>{handleRedirect('/admin/dashboard')}} >My App</Navbar.Brand>
+                <Navbar.Brand href='#' onClick={()=>{handleRedirect('/admin/dashboard')}} >My App</Navbar.Brand>
                 <Nav className="me-auto">
                         <NavDropdown title="Master" id="basic-nav-dropdown">
                             <NavDropdown.Item onClick={()=>{ handleRedirect('/admin/master/category') }}>Category</NavDropdown.Item>
-                            <NavDropdown.Item onClick={()=>{ handleRedirect('/master/bmv')}} >BMV</NavDropdown.Item>
+                            <NavDropdown.Item onClick={()=>{ handleRedirect('/admin/master/item')}} >Item</NavDropdown.Item>
                             <NavDropdown.Divider />
                             <NavDropdown.Item href="#action/3.4"> Separated link</NavDropdown.Item>
                         </NavDropdown>
-                    <Nav.Link href="#features">Features</Nav.Link>
+                    <Nav.Link href="#features">Orders</Nav.Link>
                     <Nav.Link href="#pricing">Pricing</Nav.Link>
                 </Nav>
                 <Nav>

@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Col, Nav, Row } from "react-bootstrap";
+import { Alert, Button, Col, Nav, Row } from "react-bootstrap";
 import { getLocalStorageData, useRedirect, PAGE_LIMIT } from "../../action/common";
 import { Link, useLocation } from "react-router-dom";
-import { getAllCategory } from "../../services/common.service";
+import { getAllCategory,deleteCategoryById } from "../../services/common.service";
 import { Pagination } from "react-bootstrap";
 
 const ViewCategory=()=>{
     const { state  }=useLocation();
+    const [locationState,setLocationState]=useState(state);
     let { handleRedirect } =useRedirect();
     const [categoryList,setCategoryList]=useState([])
     const [current_page,setCurrentPage]=useState(1);
-
     const [totalPages,setTotalPages]=useState(0);
-
+    
 
     let localStorageData=getLocalStorageData();
 
@@ -44,12 +44,39 @@ const ViewCategory=()=>{
     const handlePageClick = (pageNumber) => {
       if(pageNumber>0 && pageNumber<=totalPages){  setCurrentPage(pageNumber); }  
     };
-    
+
+
+    const deleteCategory=(id,slNo)=>{
+        const deleteParams={
+            "_id":id,
+            accessToken:localStorageData.accessToken
+        }
+        deleteCategoryById(deleteParams).
+        then(result=>{
+            if(result)
+            {
+                if((pageNo+1)==slNo)
+                {
+                    setCurrentPage(current_page-1);   
+                }else{
+                    fetchCategoryList(current_page); 
+                }
+            }
+        }).catch(err=>{
+
+        })
+    }
+
+    window.history.replaceState({},'');
+    setTimeout(()=>{
+        setLocationState(null);
+    },3000);
+
     useEffect(()=>{
         fetchCategoryList(current_page);
     },[current_page])
     
-    let pageNo=(parseInt(current_page)*parseInt(PAGE_LIMIT))-parseInt(PAGE_LIMIT);
+    const pageNo=(parseInt(current_page)*parseInt(PAGE_LIMIT))-parseInt(PAGE_LIMIT);
     let i=pageNo;
     return (<div>
         <Nav variant="tabs" defaultActiveKey="/home">
@@ -61,15 +88,15 @@ const ViewCategory=()=>{
             </Nav.Item>
         </Nav>
         <div className="p-5">
-        { (state && state.status.length>0) && <Alert variant="success">Record Submitted Successfully</Alert> }
+        { (locationState && locationState.status.length>0) && <Alert variant="success" dismissible>{ locationState.msg } </Alert> }
             <Row className="justify-content-md-center">
                 <Col lg="12">
-                    <table className="table">
+                    <table className="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <td>Sl No.</td>
-                                <td>Category</td>
-                                <td align="center" colSpan={2}>Action</td>
+                                <th>Sl No.</th>
+                                <th>Category</th>
+                                <th className="align-center" colSpan={2}>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -77,8 +104,8 @@ const ViewCategory=()=>{
                               return  <tr key={i}>
                                     <td>{++i}</td>
                                     <td>{val.category}</td>
-                                    <td align="center"><Link to={`/admin/master/category/edit/${val._id}`} >Edit</Link></td>
-                                    <td align="center"><Link to="">Delete</Link></td>
+                                    <td align="center"><Link size="sm" className="btn btn-sm btn-primary" to={`/admin/master/category/edit/${val._id}`} >Edit</Link></td>
+                                    <td align="center"><Button  size="sm"  onClick={()=>{deleteCategory(val._id,i)}}>Delete</Button></td>
                                 </tr>
                             }): <tr key={i}><td colSpan={4} align="center">No Record Found!</td></tr> }
                         </tbody>
