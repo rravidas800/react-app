@@ -2,7 +2,8 @@ import Dashboard from "./Admin/Dashboard";
 import Login from "./Admin/Login"
 import Category from "./Admin/master/Category";
 import ViewCategory from "./Admin/master/ViewCategory";
-import AuthLogin from "./Admin/middleware/AuthLogin"
+import AuthLogin from "./Admin/middleware/AuthLogin";
+import Items from "./Admin/master/Items";
 import ProtectedRoutes from "./Admin/middleware/protected.routes"
 import { AppProvider } from './contaxts/AppContaxt';
 import Admin from "./layouts/Admin";
@@ -30,16 +31,29 @@ export const AppRoutes =()=>{
             path:"master",
             element:'',
             children:[{
-                path:"category",
-                element:<ProtectedRoutes><Category/></ProtectedRoutes>
-                },{
-                  path:"category/view",
-                  element:<ProtectedRoutes><ViewCategory/></ProtectedRoutes>
-                  },
-                  {
-                    path:"category/edit/:id",
-                    element:<ProtectedRoutes><Category/></ProtectedRoutes>
-                  }
+                        path:"category",
+                        element:<ProtectedRoutes><Category/></ProtectedRoutes>
+                      },
+                      {
+                        path:"category/view",
+                        element:<ProtectedRoutes><ViewCategory/></ProtectedRoutes>
+                      },
+                      {
+                          path:"category/edit/:id",
+                          element:<ProtectedRoutes><Category/></ProtectedRoutes>
+                      },
+                      {
+                        path:"item",
+                        element:<ProtectedRoutes><Items/></ProtectedRoutes>
+                      },
+                      {
+                        path:"item/edit/:id",
+                        element:<ProtectedRoutes><Items/></ProtectedRoutes>
+                      },
+                      {
+                        path:"item/view",
+                        element:<ProtectedRoutes><Items/></ProtectedRoutes>
+                      }
                 ]
         }]
         

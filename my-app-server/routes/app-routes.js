@@ -61,7 +61,7 @@ routes.post("/category/:type",async(req,res,next)=>{
             }else if(req.params.type=='view')
             {
                 let searchParam=req.body.searchParam;
-                const pageSize=req.body.limit?req.body.limit:10;
+                const pageSize=req.body.limit?req.body.limit:0;
                 const pageNumber=req.body.pageNumber?req.body.pageNumber:1;
                 const skipCount=(pageNumber-1)*pageSize;
                 searchParam={...searchParam,deleted:0};
