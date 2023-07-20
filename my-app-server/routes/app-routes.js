@@ -5,7 +5,20 @@ const category = require('../model/category');
 const mongoose = require('mongoose');
 const { JWT_SECRET } =require("../config/common");
 
+/*------API for magage item----------*/
+router.post("/item/:type",async(req,res,next)=>{
+    try{
+        
+    }catch(err)
+    {
+        return res.status(500).json({
+            "status":"failed",
+            "msg":"Something went wrong! try again later"
+        })
+    }
+})
 
+/*------------Api for manage category-------*/
 routes.post("/category/:type",async(req,res,next)=>{
     try{
             if(req.params.type=='add')

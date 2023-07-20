@@ -61,3 +61,21 @@ export const deleteCategoryById=async(params)=>{
         return false;
     }
 }
+
+export const saveItem=async(params)=>{
+    try{
+        const config = {     
+            headers: { 'content-type': 'multipart/form-data' }
+        }
+        return await axios.post(API_URL+"item/save",params)
+        .then(result=>{
+            console.log(result);
+        })
+        .catch(err=>{
+            console.log(err);
+        })
+    }catch(e)
+    {
+        return false;
+    }
+}
