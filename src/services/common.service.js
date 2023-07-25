@@ -62,10 +62,11 @@ export const deleteCategoryById=async(params)=>{
     }
 }
 
-export const saveItem=async(params)=>{
+export const saveItemData=async(params)=>{
+    console.log("form data=>",params);
     try{
         const config = {     
-            headers: { 'content-type': 'multipart/form-data' }
+            headers: { 'Content-type': 'multipart/form-data' }
         }
         return await axios.post(API_URL+"item/save",params)
         .then(result=>{

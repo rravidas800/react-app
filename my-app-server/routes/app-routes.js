@@ -4,18 +4,33 @@ const jwt=require("jsonwebtoken");
 const category = require('../model/category');
 const mongoose = require('mongoose');
 const { JWT_SECRET } =require("../config/common");
+const multer=require('multer');
+var upload = multer({ dest: 'uploads/'});
 
+var type = upload.single('item_image');
+
+
+/* const upload=multer({
+    storage:multer.diskStorage({
+        destination:
+    })
+})
+ */
 /*------API for magage item----------*/
-router.post("/item/:type",async(req,res,next)=>{
-    try{
-        
-    }catch(err)
+routes.post("/item/:type",type,async(req,res,next)=>{
+   // try{
+       
+        console.log(req);
+        return res.status(200).json({
+            result:req.body
+        })
+   /*  }catch(err)
     {
         return res.status(500).json({
             "status":"failed",
             "msg":"Something went wrong! try again later"
         })
-    }
+    } */
 })
 
 /*------------Api for manage category-------*/

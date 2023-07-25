@@ -5,6 +5,9 @@ const appRouter=require("./routes/app-routes");
 const bodyParser = require('body-parser');
 const mongoose=require("mongoose");
 const cors=require("cors");
+const multer=require("multer");
+var forms = multer();
+
 mongoose.connect("mongodb://localhost:27017/my_app");
 
 mongoose.connection.on("error",()=>{
@@ -16,8 +19,10 @@ mongoose.connection.on("connected",()=>{
 })
 
 app.use(cors());
-app.use(bodyParser.urlencoded({extended:false}));
+//app.use(multer().array())
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+
 
 
 app.use("/api",[userRouter,appRouter]);

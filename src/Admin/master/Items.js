@@ -4,7 +4,7 @@ import { Alert, Form, Nav, Row } from "react-bootstrap";
 import Col from 'react-bootstrap/Col';
 import { getLocalStorageData, useRedirect } from "../../action/common";
 import { useNavigate, useParams } from "react-router-dom";
-import { getAllCategory,saveItem } from "../../services/common.service";
+import { getAllCategory,saveItemData } from "../../services/common.service";
 import axios from "axios";
 
 const Items=()=>{
@@ -14,8 +14,9 @@ const Items=()=>{
     const [errorMessage,setErrorMessage]=useState("");
     const [categoryList,setCategoryList]=useState({});
 
-    const [formData,setFormData]=useState({});
-    
+    const [formPostData,setFormPostData]=useState({});
+    const [itemImage,setItemImage]=useState("");
+    //const formFields = new FormData();
 
     /*------fill form data with form element----*/
     const handleFormField=(e)=>{
@@ -23,11 +24,9 @@ const Items=()=>{
         
         if(name=='item_image')
         {
-            setFormData({...formData,[name]:e.target.files[0]});
-          // formFields.append(name,e.target.files[0]);
+            setItemImage(e.target.files[0]);          
         }else{
-            setFormData({...formData,[name]:value});
-           //formFields.append(name,value);
+            setFormPostData({...formPostData,[name]:value});
         }
     }   
     /*-------end------------*/
@@ -62,10 +61,17 @@ const Items=()=>{
 
     const saveItem=(e)=>{
         e.preventDefault();
-        const formFields = new FormData(e.target);
+      
+        const formFields = new FormData();
+      
+        formFields.append('item_image',itemImage);
         
-       
-        saveItem(formFields).
+        Object.entries(formPostData).forEach(entry => {
+            const [key, value] = entry;
+            formFields.append(key,value);
+        });
+
+        saveItemData(formFields).
         then(result=>{
             console.log(result);
         })
@@ -96,7 +102,7 @@ const Items=()=>{
             <Row className="justify-content-md-center">
                 <Col lg="8">
                 { errorMessage.length>0 &&  <div><Alert variant="danger" >{errorMessage }</Alert></div> }  
-                    <Form type="post" onSubmit={saveItem} enctype="multipart/form-data">
+                    <Form type="post" onSubmit={saveItem} >
                             <Row className="mb-3">
                                 <Form.Group as={Col} controlId="formGridItemName">
                                     <Form.Label>Item Name</Form.Label>
