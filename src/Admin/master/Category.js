@@ -31,12 +31,12 @@ const  Category=()=>{
             if(result){
                 navigate('/admin/master/category/view',{state:result});
             }else{
-                setErrorMessage("Failed to save record");
+                setErrorMessage("Failed to save record!");
             }
             
         })
         .catch(err=>{
-            setErrorMessage("Failed to save record");
+            setErrorMessage("Failed to save record!");
         });
         
     }

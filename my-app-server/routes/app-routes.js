@@ -2,35 +2,87 @@ const express=require('express');
 const routes=express.Router();
 const jwt=require("jsonwebtoken");
 const category = require('../model/category');
+const Items=require('../model/items');
 const mongoose = require('mongoose');
 const { JWT_SECRET } =require("../config/common");
 const multer=require('multer');
-var upload = multer({ dest: 'uploads/'});
 
-var type = upload.single('item_image');
+const {fileUpload}=require("../middleware/fileupload");
 
+const itemImage = fileUpload.single('item_image');
 
-/* const upload=multer({
-    storage:multer.diskStorage({
-        destination:
-    })
-})
- */
 /*------API for magage item----------*/
-routes.post("/item/:type",type,async(req,res,next)=>{
-   // try{
+routes.post("/item/:type",async(req,res,next)=>{
+    try{
+
+        if(req.params.type=='save')
+        {
+            itemImage(req,res,function(err){
+          
+                if(err instanceof multer.MulterError) {
+                    // A multer error occurred (e.g., file size exceeded or invalid file type)
+                        return res.status(200).json({status:"failed",error: err.message, message: err.message});
+                } else if (err) {
+                    // Some other error occurred
+                        return res.status(200).json({status:"failed",error: err.message, message: err.message});
+                }
+    
+                if(req.file)
+                {
+                    uploadedItemImageName=req.file.filename;
+                
+                    const itemData=new Items({
+                        _id:new mongoose.Types.ObjectId,
+                        item_name:req.body.item_name,
+                        category:req.body.category_id,
+                        price:req.body.price,
+                        description:req.body.description,
+                        item_image:{
+                                _id:new mongoose.Types.ObjectId,
+                                item_image:uploadedItemImageName
+                            }
+                    })
+                    itemData.save()
+                    .then(result=>{
+                        return res.status(200).json({
+                            status:"success",
+                            message:"Record submitted successfully"
+                        })
+                    }).catch(err=>{
+                        return res.status(200).json({
+                            status:"failed",
+                            message:"Failed to submit the record!"
+                        })
+                    })
+                }
+            })
+        }else if(req.params.type=='view')
+        {
+          
+                Items.find().populate('category','category')
+                .then(result=>{
+                    return  res.status(200).json({
+                        status:"success",
+                        result:result
+                    });
+                })
+                .catch(err=>{
+                    return  res.status(200).json({
+                        status:"failed",
+                        result:"",
+                        msg:"Something went worng. Try again later!"
+                    });
+                }) 
+        }
        
-        console.log(req);
-        return res.status(200).json({
-            result:req.body
-        })
-   /*  }catch(err)
+     }catch(err)
     {
         return res.status(500).json({
             "status":"failed",
-            "msg":"Something went wrong! try again later"
+            "message":"Something went wrong! try again later",
+             error:err
         })
-    } */
+    } 
 })
 
 /*------------Api for manage category-------*/

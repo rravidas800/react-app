@@ -5,12 +5,13 @@ import Col from 'react-bootstrap/Col';
 import { getLocalStorageData, useRedirect } from "../../action/common";
 import { useNavigate, useParams } from "react-router-dom";
 import { getAllCategory,saveItemData } from "../../services/common.service";
-import axios from "axios";
+
 
 const Items=()=>{
     const  {id} =useParams();
 
     let { handleRedirect } =useRedirect();
+    let navigateToUrl=useNavigate();
     const [errorMessage,setErrorMessage]=useState("");
     const [categoryList,setCategoryList]=useState({});
 
@@ -42,8 +43,7 @@ const Items=()=>{
             await getAllCategory(parmas).then(result=>{
                 if(result)
                 {
-                    console.log(result.result);
-                    setCategoryList(result.result);
+                     setCategoryList(result.result);
                 }else{
                     setCategoryList([]);
                 }
@@ -73,17 +73,24 @@ const Items=()=>{
 
         saveItemData(formFields).
         then(result=>{
-            console.log(result);
+            
+            if(result && result.status=='success')
+            {
+                navigateToUrl('/admin/master/item/view',{state:result}); 
+
+            }else if(result && result.status=='failed')
+            {
+                setErrorMessage(result.message);
+            }else
+            {
+                setErrorMessage("Failed to save record!");
+            }
+            
         })
         .catch(err=>{
-            console.log(err)
+            setErrorMessage(err);
         })
-
-       /*  formData.map((val,ind)=>{
-            console.log(val,"--",ind);
-        }) */
-       // formFields.append('formInput',"test")
-       // console.log(formFields);
+      
     }
 
     useEffect(()=>{

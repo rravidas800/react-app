@@ -9,6 +9,7 @@ import { AppProvider } from './contaxts/AppContaxt';
 import Admin from "./layouts/Admin";
 import PageNotFound from "./layouts/PageNotFound"
 import { useRoutes } from 'react-router-dom';
+import ViewItems from "./Admin/master/ViewItems";
 
 export const AppRoutes =()=>{
     const routes=useRoutes([
@@ -52,7 +53,7 @@ export const AppRoutes =()=>{
                       },
                       {
                         path:"item/view",
-                        element:<ProtectedRoutes><Items/></ProtectedRoutes>
+                        element:<ProtectedRoutes><ViewItems/></ProtectedRoutes>
                       }
                 ]
         }]
