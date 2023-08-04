@@ -63,9 +63,9 @@ const Items=()=>{
         e.preventDefault();
       
         const formFields = new FormData();
-      
-        formFields.append('item_image',itemImage);
         
+        formFields.append('item_image',itemImage);
+        formFields.append('accessToken',localStorageData.accessToken);
         Object.entries(formPostData).forEach(entry => {
             const [key, value] = entry;
             formFields.append(key,value);

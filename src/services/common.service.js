@@ -1,6 +1,6 @@
 import axios from "axios";
-import {API_URL} from '../action/common';
-
+import {API_URL, getLocalStorageData} from '../action/common';
+let localStorageData=getLocalStorageData();
 export const saveCategory=async(parmas)=>{
     try{
        return axios.post(API_URL+"category/add",parmas)
@@ -64,15 +64,53 @@ export const deleteCategoryById=async(params)=>{
 
 export const saveItemData=async(params)=>{
     try{
-        /* const config = {     
-            headers: { 'Content-type': 'multipart/form-data' }
-        } */
-        return await axios.post(API_URL+"item/save",params)
+       
+        const config = {     
+            headers: { 'authorization': localStorageData.accessToken }
+        }
+        return await axios.post(API_URL+"item/save",params,config)
         .then(result=>{
             return result.data
         })
         .catch(err=>{
             return false
+        })
+    }catch(e)
+    {
+        return false;
+    }
+}
+
+
+export const getAllItems=async(params)=>{
+    try{
+        console.log("Service Page Item =>",localStorageData);
+        const config = {     
+            headers: { 'authorization': localStorageData.accessToken }
+        }
+        console.log(config);
+        return await axios.post(API_URL+"item/view",params,config)
+        .then(result=>{
+          
+            return result.data;
+        })
+        .catch(err=>{
+            return false;
+        })
+    }catch(e)
+    {
+        return false;
+    }
+}
+
+export const deleteItemById=async(params)=>{
+    try{
+        return await axios.post(API_URL+"item/delete",params)
+        .then(result=>{
+            return true;
+        })
+        .catch(err=>{
+            return false;
         })
     }catch(e)
     {

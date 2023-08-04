@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 export const LOGIN="LOGIN";
 export const LOGOUT="LOGOUT";
 export const API_URL="http://localhost:5000/api/";
+export const FILE_URL="http://localhost:5000/";
 export const PAGE_LIMIT=10;
 
 

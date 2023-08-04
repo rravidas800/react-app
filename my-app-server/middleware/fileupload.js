@@ -15,6 +15,7 @@ const fileUpload=multer({
         fileSize:524288 // 500kb file upload
     },
     fileFilter:function(req,file,cd){
+        
         if(file.mimetype.startsWith('image/')){
             cd(null,true);
         }else
