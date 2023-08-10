@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { FILE_URL } from "../../action/common";
-import { Alert, Button, Col, Nav, Row } from "react-bootstrap";
+import { Alert, Col, Nav, Row, Modal, Button } from "react-bootstrap";
 import { getLocalStorageData, useRedirect, PAGE_LIMIT } from "../../action/common";
 import { Link, useLocation } from "react-router-dom";
 import { getAllItems,deleteItemById } from "../../services/common.service";
 import { Pagination } from "react-bootstrap";
+
 
 
 
@@ -13,6 +14,10 @@ const ViewItems=()=>{
     let { handleRedirect } =useRedirect();
     const { state  }=useLocation();
     const [locationState,setLocationState]=useState(state);
+
+    const [showModal,setShowModal]=useState(false);
+    const handleModalClose = () => setShowModal(false);
+   
     
     const [itemsList,setItemsList]=useState({});
     const [current_page,setCurrentPage]=useState(1);
@@ -20,17 +25,25 @@ const ViewItems=()=>{
 
     let localStorageData=getLocalStorageData();
 
+    /*-------get Item Details---------*/
+    const showItemDetails=(param)=>{
+         console.log("Item Id=",param);
+      
+         setShowModal(true);
+    }
+    /*----------End---------*/
+
+
     const fetchItemList=async(current_page)=>{
         let parmas={
             pageNumber:current_page,
             limit:PAGE_LIMIT
         }
-        console.log("View Page Item =>",localStorageData);
+       
         try{
             await getAllItems(parmas).then(result=>{
                 if(result)
                 {
-                    console.log(result.result);
                     setItemsList(result.result);
                     setTotalPages(result.total_page);
                  
@@ -115,10 +128,11 @@ const ViewItems=()=>{
                                     <td>{val.category.category}</td>
                                     <td>{val.item_name}</td>
                                     <td>{val.price}</td>
-                                    <td>{(val.item_image.item_image!="") && <img     height="50px" src={ FILE_URL+'uploads/'+ val.item_image.item_image } /> }</td>
-                                    <td align="center"><Link size="sm" className="btn btn-sm btn-primary" to={`/admin/master/category/view/${val._id}`} >View</Link></td>
-                                    <td align="center"><Link size="sm" className="btn btn-sm btn-primary" to={`/admin/master/category/edit/${val._id}`} >Edit</Link></td>
-                                    <td align="center"><Button  size="sm"  onClick={()=>{deleteItems(val._id,i)}}>Delete</Button></td>
+                                    <td>{(val.item_image.item_image!="") && <img  height="50px" src={ FILE_URL+'uploads/'+ val.item_image.item_image } /> }</td>
+                                    <td align="center"><Link size="sm" title="View"  onClick={()=>{showItemDetails(val._id)}}><i className="fa fa-eye"></i></Link></td>
+                                    <td align="center"><Link size="sm" title="Edit" to={`/admin/master/item/edit/${val._id}`} ><i className="fa fa-edit"></i></Link></td>
+                                    <td align="center">
+                                    <Link size="sm"  title="Delete"  onClick={()=>{deleteItems(val._id,i)}} ><i className="fa fa-trash-alt"></i></Link></td>
                                 </tr>
                             }): <tr key={i}><td colSpan={6} align="center">No Record Found!</td></tr> }
                         </tbody>
@@ -142,8 +156,20 @@ const ViewItems=()=>{
                     }
                  </Col>
             </Row>
+       
+        <Modal show={showModal} onHide={handleModalClose}  size="lg">
+            <Modal.Header closeButton>
+            <Modal.Title>Item Details</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
+            {/* <Modal.Footer>
+            <Button variant="secondary" onClick={handleModalClose}>
+                Close
+            </Button>
+            </Modal.Footer> */}
+        </Modal>
         </div>
-    </div>
+        </div>
     )
 }
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 import {API_URL, getLocalStorageData} from '../action/common';
-let localStorageData=getLocalStorageData();
+
 export const saveCategory=async(parmas)=>{
     try{
        return axios.post(API_URL+"category/add",parmas)
@@ -64,7 +64,7 @@ export const deleteCategoryById=async(params)=>{
 
 export const saveItemData=async(params)=>{
     try{
-       
+        let localStorageData=getLocalStorageData();
         const config = {     
             headers: { 'authorization': localStorageData.accessToken }
         }
@@ -84,11 +84,11 @@ export const saveItemData=async(params)=>{
 
 export const getAllItems=async(params)=>{
     try{
-        console.log("Service Page Item =>",localStorageData);
+        let localStorageData=getLocalStorageData();
         const config = {     
             headers: { 'authorization': localStorageData.accessToken }
         }
-        console.log(config);
+        
         return await axios.post(API_URL+"item/view",params,config)
         .then(result=>{
           

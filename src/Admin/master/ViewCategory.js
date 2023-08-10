@@ -96,7 +96,7 @@ const ViewCategory=()=>{
                             <tr>
                                 <th>Sl No.</th>
                                 <th>Category</th>
-                                <th className="align-center" colSpan={2}>Action</th>
+                                <th className="text-center" colSpan={2}>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -104,8 +104,9 @@ const ViewCategory=()=>{
                               return  <tr key={i}>
                                     <td>{++i}</td>
                                     <td>{val.category}</td>
-                                    <td align="center"><Link size="sm" className="btn btn-sm btn-primary" to={`/admin/master/category/edit/${val._id}`} >Edit</Link></td>
-                                    <td align="center"><Button  size="sm"  onClick={()=>{deleteCategory(val._id,i)}}>Delete</Button></td>
+                                    <td align="center"><Link size="sm" title="Edit" to={`/admin/master/category/edit/${val._id}`} ><i className="fa fa-edit"></i></Link></td>
+                                    <td align="center">
+                                    <Link size="sm" title="Delete" onClick={()=>{deleteCategory(val._id,i)}} ><i className="fa fa-trash-alt"></i></Link></td>
                                 </tr>
                             }): <tr key={i}><td colSpan={4} align="center">No Record Found!</td></tr> }
                         </tbody>
