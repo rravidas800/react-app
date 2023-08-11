@@ -18,7 +18,7 @@ const ViewItems=()=>{
     const [showModal,setShowModal]=useState(false);
     const handleModalClose = () => setShowModal(false);
    
-    
+    const [itemDetailsModal,setItemDetailsModel]=useState({});
     const [itemsList,setItemsList]=useState({});
     const [current_page,setCurrentPage]=useState(1);
     const [totalPages,setTotalPages]=useState(0);
@@ -26,10 +26,36 @@ const ViewItems=()=>{
     let localStorageData=getLocalStorageData();
 
     /*-------get Item Details---------*/
-    const showItemDetails=(param)=>{
-         console.log("Item Id=",param);
+    const showItemDetails=async(itemId)=>{
+        setShowModal(true);
+        let parmas={
+            searchParam:{_id:itemId}
+        }
+        try{
+            await getAllItems(parmas).then(result=>{
+                if(result)
+                {
+                    if(result.result[0].item_image.length===undefined)
+                    {
+                        var imgData=JSON.stringify(result.result[0].item_image);
+                        imgData="["+imgData+"]";
+                        result.result[0].item_image=JSON.parse(imgData);
+                    }
+                    setItemDetailsModel(result.result[0]);
+                    //console.log("Final Data=>",itemDetailsModal);
+                 
+                }else{
+                    setItemDetailsModel([]);
+                }
+             })
+             .catch(err=>{
+                setItemDetailsModel([]);
+             })
+        }catch(err){
+            setItemDetailsModel([]);
+        }
       
-         setShowModal(true);
+         
     }
     /*----------End---------*/
 
@@ -161,12 +187,41 @@ const ViewItems=()=>{
             <Modal.Header closeButton>
             <Modal.Title>Item Details</Modal.Title>
             </Modal.Header>
-            <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
-            {/* <Modal.Footer>
-            <Button variant="secondary" onClick={handleModalClose}>
-                Close
-            </Button>
-            </Modal.Footer> */}
+            <Modal.Body>
+                <Row> <Col lg="12">
+                    <table className="table table-bordered table-striped">
+                        <tbody>
+                        <tr>
+                            <td>Item Name</td>
+                            <td>{ itemDetailsModal.item_name?itemDetailsModal.item_name:"--" }</td>
+                        </tr>
+                        <tr>
+                            <td>Category</td>
+                            <td>{ itemDetailsModal.category?itemDetailsModal.category.category:"--" }</td>
+                        </tr>
+                        <tr>
+                            <td>Price</td>
+                            <td>{ itemDetailsModal.price?"Rs."+itemDetailsModal.price:"--" }</td>
+                        </tr>
+                        <tr>
+                            <td>Description</td>
+                            <td>{ itemDetailsModal.description?itemDetailsModal.description:"--" }</td>
+                        </tr>
+                        <tr>
+                            <th colSpan={2}>Images</th>
+                        </tr>
+                        <tr>
+                            <td colSpan={2}>
+                            { (itemDetailsModal.item_image && itemDetailsModal.item_image.length>0) &&  itemDetailsModal.item_image.map((imgList,index)=>{
+                                return <img  key={index} height="100px" src={ FILE_URL+'uploads/'+ imgList.item_image } />
+                            }) }
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    </Col>
+                    </Row>
+            </Modal.Body>
         </Modal>
         </div>
         </div>
