@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { FILE_URL } from "../../action/common";
 import { Alert, Col, Nav, Row, Modal, Button } from "react-bootstrap";
 import { getLocalStorageData, useRedirect, PAGE_LIMIT } from "../../action/common";
@@ -9,10 +9,14 @@ import { Pagination } from "react-bootstrap";
 
 
 
+
 const ViewItems=()=>{
 
     let { handleRedirect } =useRedirect();
     const { state  }=useLocation();
+
+    const inputFileRef=useRef(null);
+
     const [locationState,setLocationState]=useState(state);
 
     const [showModal,setShowModal]=useState(false);
@@ -22,12 +26,24 @@ const ViewItems=()=>{
     const [itemsList,setItemsList]=useState({});
     const [current_page,setCurrentPage]=useState(1);
     const [totalPages,setTotalPages]=useState(0);
+    const [showLoader,setShowLoader]=useState(true);
+    const [showContentDetails,setShowContentDetails]=useState(false);
+
 
     let localStorageData=getLocalStorageData();
+
+    /*----Loader style----*/
+    const loaderStyle={
+        "fontSize":"48px",
+        "color":"blue"
+    }
+    /*------end-------*/
 
     /*-------get Item Details---------*/
     const showItemDetails=async(itemId)=>{
         setShowModal(true);
+        setShowLoader(true);
+        setShowContentDetails(false);
         let parmas={
             searchParam:{_id:itemId}
         }
@@ -35,6 +51,8 @@ const ViewItems=()=>{
             await getAllItems(parmas).then(result=>{
                 if(result)
                 {
+                    setShowLoader(false);
+                    setShowContentDetails(true);
                     if(result.result[0].item_image.length===undefined)
                     {
                         var imgData=JSON.stringify(result.result[0].item_image);
@@ -42,7 +60,6 @@ const ViewItems=()=>{
                         result.result[0].item_image=JSON.parse(imgData);
                     }
                     setItemDetailsModel(result.result[0]);
-                    //console.log("Final Data=>",itemDetailsModal);
                  
                 }else{
                     setItemDetailsModel([]);
@@ -54,8 +71,6 @@ const ViewItems=()=>{
         }catch(err){
             setItemDetailsModel([]);
         }
-      
-         
     }
     /*----------End---------*/
 
@@ -110,10 +125,18 @@ const ViewItems=()=>{
         })
     }
 
+    /*----- Open File choose on button click----*/
+    const chooseFile=()=>{
+        inputFileRef.current.click();
+    }
+    /*---------------End-------------*/
+
+    /*----------Hide success or failed message after save or edit item----------*/
     window.history.replaceState({},'');
     setTimeout(()=>{
         setLocationState(null);
     },3000);
+    /*-------------End----------------*/
 
     useEffect(()=>{
         fetchItemList(current_page);
@@ -188,6 +211,11 @@ const ViewItems=()=>{
             <Modal.Title>Item Details</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+              { showLoader &&  <Row ><Col lg="12" className="text-center">
+                    <i className="fa fa-spinner fa-spin" style={loaderStyle}></i>
+                    <div>Please wait....</div>
+                </Col></Row> }
+               { showContentDetails &&
                 <Row> <Col lg="12">
                     <table className="table table-bordered table-striped">
                         <tbody>
@@ -208,7 +236,21 @@ const ViewItems=()=>{
                             <td>{ itemDetailsModal.description?itemDetailsModal.description:"--" }</td>
                         </tr>
                         <tr>
-                            <th colSpan={2}>Images</th>
+                            <th colSpan={2}>
+                            <Row>
+                                <Col xs={9} >
+                                    <div className="pull-left" >Images</div> 
+                                </Col>
+                                <Col>
+                                    <form>
+                                    <div className="pull-right">
+                                        <Button className="btn btn-success btn-sm" onClick={ chooseFile } >Upload More Images</Button>
+                                        <input type="file" ref={inputFileRef}  style={{display: 'none'}} name="item_images[]" max={5} id="item_image_input_field" />
+                                    </div>
+                                    </form>
+                                </Col>
+                            </Row>
+                            </th>
                         </tr>
                         <tr>
                             <td colSpan={2}>
@@ -221,6 +263,7 @@ const ViewItems=()=>{
                     </table>
                     </Col>
                     </Row>
+                }
             </Modal.Body>
         </Modal>
         </div>

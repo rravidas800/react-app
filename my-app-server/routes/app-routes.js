@@ -19,8 +19,9 @@ routes.post("/item/:type",verifyJwtToken,async(req,res,next)=>{
     try{
             if(req.params.type=='save')
             {
+             
                 itemImage(req,res,function(err){
-                 
+                    
                     if(err instanceof multer.MulterError) {
                         // A multer error occurred (e.g., file size exceeded or invalid file type)
                         return res.status(200).json({status:"failed",error: err.message, message: err.message});
@@ -28,7 +29,39 @@ routes.post("/item/:type",verifyJwtToken,async(req,res,next)=>{
                         // Some other error occurred
                         return res.status(200).json({status:"failed",error: err.message, message: err.message});
                     }
-        
+                    
+                    /*--------Update Item details by id------*/
+                    if(req.body._id)
+                    {
+                        let updateParams={
+                            item_name:req.body.item_name,
+                            category:req.body.category_id,
+                            price:req.body.price,
+                            description:req.body.description
+                        }
+                        console.log(updateParams);
+                        Items.findByIdAndUpdate(req.body._id,updateParams)
+                        .then(result=>{
+                            return res.status(200).json({
+                                status:"success",
+                                message:"Record updated successfully."
+                            })
+                        })
+                        .catch(err=>{
+                            
+                            return res.status(200).json({
+                                error:err,
+                                status:"failed",
+                                message:"Failed to update the record! try again later",
+                                
+                            })
+                        })  
+                    }
+
+                    /*------------------End--------------------*/
+
+                    /*-------------Add New Item-----------*/
+                    console.log(req);
                     if(req.file)
                     {
                         uploadedItemImageName=req.file.filename;
@@ -57,6 +90,7 @@ routes.post("/item/:type",verifyJwtToken,async(req,res,next)=>{
                             })
                         })
                     }
+                    /*------------end------------*/
                 })
             }else if(req.params.type=='view')
             {

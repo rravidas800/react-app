@@ -2,27 +2,29 @@ import React,{ useState, useEffect} from "react";
 import Button from "react-bootstrap/Button";
 import { Alert, Form, Nav, Row } from "react-bootstrap";
 import Col from 'react-bootstrap/Col';
-import { getLocalStorageData, useRedirect } from "../../action/common";
+import { FILE_URL, getLocalStorageData, useRedirect } from "../../action/common";
 import { useNavigate, useParams } from "react-router-dom";
-import { getAllCategory,saveItemData } from "../../services/common.service";
+import { getAllCategory,saveItemData,getAllItems } from "../../services/common.service";
 
 
 const Items=()=>{
     const  {id} =useParams();
-
     let { handleRedirect } =useRedirect();
     let navigateToUrl=useNavigate();
     const [errorMessage,setErrorMessage]=useState("");
     const [categoryList,setCategoryList]=useState({});
-
     const [formPostData,setFormPostData]=useState({});
     const [itemImage,setItemImage]=useState("");
-    //const formFields = new FormData();
-
+    const [itemData,setItemData]=useState({});
+    const [selectedCategory,setSelectedCategory]=useState("");
+    
     /*------fill form data with form element----*/
     const handleFormField=(e)=>{
         const {target:{name,value}}=e;
-        
+        if(name=='category_id')
+        {
+            setSelectedCategory(value);
+        }
         if(name=='item_image')
         {
             setItemImage(e.target.files[0]);          
@@ -44,6 +46,7 @@ const Items=()=>{
                 if(result)
                 {
                      setCategoryList(result.result);
+                     
                 }else{
                     setCategoryList([]);
                 }
@@ -55,22 +58,25 @@ const Items=()=>{
             setCategoryList([]);
         }
     }
-    
     /*-------end--------*/
-
 
     const saveItem=(e)=>{
         e.preventDefault();
       
-        const formFields = new FormData();
-        
-        formFields.append('item_image',itemImage);
-        formFields.append('accessToken',localStorageData.accessToken);
-        Object.entries(formPostData).forEach(entry => {
+        const formFields = new FormData(e.currentTarget);
+        if(id)
+        {
+            formFields.append('_id',id);
+        }
+       /*  if(itemImage)
+        {
+            formFields.append('item_image',itemImage);
+        } */
+        /* Object.entries(formPostData).forEach(entry => {
             const [key, value] = entry;
             formFields.append(key,value);
-        });
-
+        }); */
+       
         saveItemData(formFields).
         then(result=>{
             
@@ -93,9 +99,35 @@ const Items=()=>{
       
     }
 
+    /*--------get item by id ---- edit case-----*/
+    const getItemById=async(itemId)=>{
+        let parmas={
+            searchParam:{_id:itemId}
+        }
+        try{
+            await getAllItems(parmas).then(res=>{
+                if(res.status=='success')
+                {
+                    setItemData(res.result[0]);
+                    setSelectedCategory(res.result[0].category._id);
+                }
+            })
+            .catch(err=>{
+                setItemData([]);
+            })
+        }
+        catch(e){
+            setItemData([]);
+        }
+    }
+    /*------------end-------------*/
+
     useEffect(()=>{
         fetchCategoryList();
-    },[])
+        if(id){
+            getItemById(id)
+        }
+    },[id])
     return (<div>
         <Nav variant="tabs" defaultActiveKey="/home">
             <Nav.Item>
@@ -113,16 +145,16 @@ const Items=()=>{
                             <Row className="mb-3">
                                 <Form.Group as={Col} controlId="formGridItemName">
                                     <Form.Label>Item Name</Form.Label>
-                                    <Form.Control type="input" name="item_name" onChange={handleFormField} placeholder="Enter item name" />
+                                    <Form.Control type="input" name="item_name" onChange={handleFormField} placeholder="Enter item name" defaultValue={itemData?itemData.item_name:""}/>
                                 </Form.Group>
 
                                 <Form.Group as={Col} controlId="formGridPassword">
                                     <Form.Label>Category</Form.Label>
-                                    <Form.Select defaultValue="--Select--" name="category_id" onChange={handleFormField}>
+                                    <Form.Select name="category_id" onChange={handleFormField} value={selectedCategory}  >
                                         <option>--Select--</option>
                                        {  categoryList.length &&
                                             categoryList.map((item)=>{
-                                                return <option key={item._id} value={item._id} >{item.category}</option>
+                                                return <option key={item._id}  value={item._id} >{item.category}</option>
                                             })
                                         } 
                                     </Form.Select>
@@ -130,23 +162,23 @@ const Items=()=>{
                             </Row>
                             <Row className="mb-3">
                                 <Form.Group as={Col} controlId="formGridImage">
-                                    <Form.Label>Image</Form.Label>
-                                    <Form.Control type="file" name="item_image" onChange={handleFormField} />                                
-                                </Form.Group>
-                                <Form.Group as={Col} controlId="formGridImage">
                                     <Form.Label>Price</Form.Label>
-                                    <Form.Control  name="price" placeholder="Enter price" onChange={handleFormField} />
+                                    <Form.Control  name="price" placeholder="Enter price" onChange={handleFormField} defaultValue={itemData?itemData.price:""} />
                                 </Form.Group>
+                                { !id ? <Form.Group as={Col} controlId="formGridImage">
+                                    <Form.Label>Image</Form.Label>
+                                    <Form.Control type="file" name="item_image" onChange={handleFormField} />
+                                </Form.Group>:<Form.Group as={Col} controlId="formGridImage"></Form.Group> }
                             </Row>
                             <Row className="mb-3">
                                 <Form.Group as={Col} controlId="formGridCity">
                                     <Form.Label>Description</Form.Label>
-                                    <Form.Control as="textarea" rows={3} placeholder="Enter Description" name="description" onChange={handleFormField} />
+                                    <Form.Control as="textarea" rows={3} placeholder="Enter Description" name="description" onChange={handleFormField} defaultValue={itemData?itemData.description:""} />
                                 </Form.Group>
                             </Row>
                             <Row className="mb-3">
                                 <Col xs={10 } >
-                                    <Button variant="primary" type="submit" className="float-end">Submit</Button>
+                                    <Button variant="primary" type="submit" className="float-end">{ id?'Update':'Submit'}</Button>
                                 </Col>
                                 <Col xs={2} >
                                     <Button variant="danger" className="float-end">Cancel</Button>                               
