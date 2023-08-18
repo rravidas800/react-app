@@ -10,7 +10,7 @@ const multer=require('multer');
 const {fileUpload}=require("../middleware/fileupload");
 
 
-
+const uploadMultipleImage=fileUpload.array('image',5);
 
 
 const itemImage = fileUpload.single('item_image');
@@ -61,7 +61,7 @@ routes.post("/item/:type",verifyJwtToken,async(req,res,next)=>{
                     /*------------------End--------------------*/
 
                     /*-------------Add New Item-----------*/
-                    console.log(req);
+                    
                     if(req.file)
                     {
                         uploadedItemImageName=req.file.filename;
@@ -72,10 +72,10 @@ routes.post("/item/:type",verifyJwtToken,async(req,res,next)=>{
                             category:req.body.category_id,
                             price:req.body.price,
                             description:req.body.description,
-                            item_image:{
+                            item_image:[{
                                     _id:new mongoose.Types.ObjectId,
-                                    item_image:uploadedItemImageName
-                                }
+                                    image:uploadedItemImageName
+                                }]
                         })
                         itemData.save()
                         .then(result=>{
@@ -131,6 +131,51 @@ routes.post("/item/:type",verifyJwtToken,async(req,res,next)=>{
             })
         } 
 })
+
+/*--------Upload images for item-------*/
+routes.post("/upload-item-images",verifyJwtToken,(req,res,next)=>{
+   
+    uploadMultipleImage(req,res,function(err){
+                    
+            if(err instanceof multer.MulterError) {
+                // A multer error occurred (e.g., file size exceeded or invalid file type)
+                return res.status(200).json({status:"failed",error: err.message, message: err.message});
+            } else if (err) {
+                // Some other error occurred
+                return res.status(200).json({status:"failed",error: err.message, message: err.message});
+            }
+            
+            if(req.files)
+            { 
+                var itemImage=[];
+                for(let file of req.files)
+                {
+                    itemImage.push({_id:new mongoose.Types.ObjectId,image:file.filename})
+                }
+                const item_id=req.body._id;
+
+                Items.updateOne({_id:item_id},{$push:{item_image:{$each:itemImage}}})
+                .then(result=>{
+                    return res.status(200).json({
+                        status:"success",
+                        msg:"images uploaded successfully"
+                    })
+                })
+                .catch(err=>{
+                    return res.status(200).json({
+                        status:"failed",
+                        msg:"failed to upload images"
+                    })
+                })
+            }
+            
+    })
+
+    console.log("testing..");
+})
+
+/*------------end--------*/
+
 
 /*------------Api for manage category-------*/
 routes.post("/category/:type",async(req,res,next)=>{

@@ -117,3 +117,23 @@ export const deleteItemById=async(params)=>{
         return false;
     }
 }
+
+
+export const uploadMultipleImages=async(formdata)=>{
+    try{
+        let localStorageData=getLocalStorageData();
+        const config={
+            headers: { 'authorization': localStorageData.accessToken }
+        }
+        return axios.post(API_URL+"upload-item-images",formdata,config)
+        .then(result=>{
+            return result.data;
+        })
+        .catch(err=>{
+            return false
+        })
+
+    }catch(e){
+        return false
+    }
+}

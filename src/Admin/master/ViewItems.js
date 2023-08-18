@@ -3,7 +3,7 @@ import { FILE_URL } from "../../action/common";
 import { Alert, Col, Nav, Row, Modal, Button } from "react-bootstrap";
 import { getLocalStorageData, useRedirect, PAGE_LIMIT } from "../../action/common";
 import { Link, useLocation } from "react-router-dom";
-import { getAllItems,deleteItemById } from "../../services/common.service";
+import { getAllItems,deleteItemById,uploadMultipleImages } from "../../services/common.service";
 import { Pagination } from "react-bootstrap";
 
 
@@ -28,7 +28,40 @@ const ViewItems=()=>{
     const [totalPages,setTotalPages]=useState(0);
     const [showLoader,setShowLoader]=useState(true);
     const [showContentDetails,setShowContentDetails]=useState(false);
+    const [activeViewItem,setActiveViewItem]=useState("");
 
+
+    /*------------Upload Multiple files----------*/
+    const [chooseMultipleFile,setchooseMultipleFile]=useState([]);
+
+    const handleFileUpload=(e)=>{
+        setchooseMultipleFile(e.target.files);
+    }
+
+    const uploadMultipleFiles=()=>{
+        const formData=new FormData();
+        for(let file of chooseMultipleFile)
+        {
+            formData.append('image',file);
+        }
+        formData.append("_id",activeViewItem);
+        setchooseMultipleFile([]);
+        uploadMultipleImages(formData)
+        .then(result=>{
+            if(result)
+            {
+                    
+            }else
+            {
+
+            }
+        })
+        .catch(err=>{
+            console.log(err);
+        })
+
+    }
+    /*--------------end--------------*/
 
     let localStorageData=getLocalStorageData();
 
@@ -41,6 +74,7 @@ const ViewItems=()=>{
 
     /*-------get Item Details---------*/
     const showItemDetails=async(itemId)=>{
+        setActiveViewItem("");
         setShowModal(true);
         setShowLoader(true);
         setShowContentDetails(false);
@@ -53,13 +87,8 @@ const ViewItems=()=>{
                 {
                     setShowLoader(false);
                     setShowContentDetails(true);
-                    if(result.result[0].item_image.length===undefined)
-                    {
-                        var imgData=JSON.stringify(result.result[0].item_image);
-                        imgData="["+imgData+"]";
-                        result.result[0].item_image=JSON.parse(imgData);
-                    }
                     setItemDetailsModel(result.result[0]);
+                    setActiveViewItem(itemId);
                  
                 }else{
                     setItemDetailsModel([]);
@@ -140,7 +169,12 @@ const ViewItems=()=>{
 
     useEffect(()=>{
         fetchItemList(current_page);
-    },[current_page])
+        if(chooseMultipleFile.length>0)
+        {
+            console.log("file uploading....");
+            uploadMultipleFiles()
+        }
+    },[current_page,chooseMultipleFile])
     
     const pageNo=(parseInt(current_page)*parseInt(PAGE_LIMIT))-parseInt(PAGE_LIMIT);
     let i=pageNo;
@@ -177,7 +211,13 @@ const ViewItems=()=>{
                                     <td>{val.category.category}</td>
                                     <td>{val.item_name}</td>
                                     <td>{val.price}</td>
-                                    <td>{(val.item_image.item_image!="") && <img  height="50px" src={ FILE_URL+'uploads/'+ val.item_image.item_image } /> }</td>
+                                    <td>
+                                        {(val.item_image!="") &&
+                                            val.item_image.map(imgList=>{
+                                                return <img  height="50px" key={imgList._id} src={ FILE_URL+'uploads/'+ imgList.image } />
+                                             })
+                                        }
+                                    </td>
                                     <td align="center"><Link size="sm" title="View"  onClick={()=>{showItemDetails(val._id)}}><i className="fa fa-eye"></i></Link></td>
                                     <td align="center"><Link size="sm" title="Edit" to={`/admin/master/item/edit/${val._id}`} ><i className="fa fa-edit"></i></Link></td>
                                     <td align="center">
@@ -242,10 +282,10 @@ const ViewItems=()=>{
                                     <div className="pull-left" >Images</div> 
                                 </Col>
                                 <Col>
-                                    <form>
+                                    <form type="post" >
                                     <div className="pull-right">
                                         <Button className="btn btn-success btn-sm" onClick={ chooseFile } >Upload More Images</Button>
-                                        <input type="file" ref={inputFileRef}  style={{display: 'none'}} name="item_images[]" max={5} id="item_image_input_field" />
+                                        <input type="file" max={5} multiple ref={inputFileRef} onChange={handleFileUpload} style={{display: 'none'}} name="item_images[]" max={5} id="item_image_input_field" />
                                     </div>
                                     </form>
                                 </Col>
@@ -255,7 +295,7 @@ const ViewItems=()=>{
                         <tr>
                             <td colSpan={2}>
                             { (itemDetailsModal.item_image && itemDetailsModal.item_image.length>0) &&  itemDetailsModal.item_image.map((imgList,index)=>{
-                                return <img  key={index} height="100px" src={ FILE_URL+'uploads/'+ imgList.item_image } />
+                                return <img  key={index} height="100px" src={ FILE_URL+'uploads/'+ imgList.image } />
                             }) }
                             </td>
                         </tr>
