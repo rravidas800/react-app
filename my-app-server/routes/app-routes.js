@@ -170,8 +170,7 @@ routes.post("/upload-item-images",verifyJwtToken,(req,res,next)=>{
             }
             
     })
-
-    console.log("testing..");
+    
 })
 
 /*------------end--------*/
