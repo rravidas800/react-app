@@ -177,24 +177,35 @@ routes.post("/upload-item-images",verifyJwtToken,(req,res,next)=>{
 
 
 /*------------Api for manage category-------*/
-routes.post("/category/:type",async(req,res,next)=>{
+routes.post("/category/:type",verifyJwtToken,async(req,res,next)=>{
     try{
             if(req.params.type=='add')
             {
-                jwt.verify(req.body.accessToken,JWT_SECRET,(err,decode)=>{
-                if(err)
-                { 
-                    return res.status(200).json({
-                        "status":"200",
-                        "result":err
-                    });
-                 }else
-                 {
-                    if(req.body._id)
+                itemImage(req,res,function(err){
+                    
+                    if(err instanceof multer.MulterError) {
+                        // A multer error occurred (e.g., file size exceeded or invalid file type)
+                        return res.status(200).json({status:"failed",error: err.message, message: err.message});
+                    } else if (err) {
+                        // Some other error occurred
+                        return res.status(200).json({status:"failed",error: err.message, message: err.message});
+                    }
+                   
+                if(req.body._id)
                     {
-                        const updateData={
-                           'category':req.body.category
+                        let updateData;
+                        if(req.file)
+                        {
+                            updateData={
+                                'category':req.body.category,
+                                'image':req.file.filename
+                            }
+                        }else{
+                            updateData={
+                                'category':req.body.category
+                            }
                         }
+                        
                         category.findByIdAndUpdate(req.body._id,updateData,{new:true,runValidators:true})
                         .then(result=>{
                             return res.status(200).json({
@@ -208,10 +219,16 @@ routes.post("/category/:type",async(req,res,next)=>{
                                 msg:"Failed to update the record."
                             })  
                        })
-                    }else{
+                }else{
+                        let category_image="";
+                        if(req.file)
+                        {
+                            category_image=req.file.filename;
+                        }
                         const categorySchema=new category({
                             _id:new mongoose.Types.ObjectId,
-                            category:req.body.category
+                            category:req.body.category,
+                            image:category_image
                         })
                         categorySchema.save()
                         .then((result)=>{
@@ -225,9 +242,9 @@ routes.post("/category/:type",async(req,res,next)=>{
                                 msg:"failed to save record."
                              })   
                         })
-                    }
-                 }
-                })
+                }    
+                
+                 });
                 
             }else if(req.params.type=='view')
             {

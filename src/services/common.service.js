@@ -1,9 +1,16 @@
 import axios from "axios";
 import {API_URL, getLocalStorageData} from '../action/common';
 
+
+
 export const saveCategory=async(parmas)=>{
     try{
-       return axios.post(API_URL+"category/add",parmas)
+        let localStorageData=getLocalStorageData();
+        const config = {     
+            headers: { 'authorization': localStorageData?localStorageData.accessToken:"" }
+        }
+
+       return axios.post(API_URL+"category/add",parmas,config)
        .then((result)=>{
            if(result.data.status==='success')
            {
@@ -22,8 +29,13 @@ export const saveCategory=async(parmas)=>{
 }
 
 export const getAllCategory=async(parmas)=>{
+  
     try{
-       return await axios.post(API_URL+"category/view",parmas)
+        let localStorageData=getLocalStorageData();
+        const config = {     
+            headers: { 'authorization': localStorageData?localStorageData.accessToken:"" }
+        }
+       return await axios.post(API_URL+"category/view",parmas,config)
        .then((result)=>{
            if(result.data.status==='success')
            {
@@ -45,7 +57,7 @@ export const deleteCategoryById=async(params)=>{
     try{
         return await axios.post(API_URL+"category/delete",params)
         .then(result=>{
-            if(result.data.status=='success')
+            if(result.data.status==='success')
             {
                 return result.data;
             }else{

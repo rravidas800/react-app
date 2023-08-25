@@ -4614,3 +4614,39 @@ readers do not read off random characters that represent icons */
 .fas {
   font-family: 'Font Awesome 5 Free';
   font-weight: 900; }
+
+  @media screen and (min-width: 768px) {
+  .imageCount{
+    position: relative;
+    top: 4.4px;
+    font-size: 20px;
+    z-index: 100;
+    font-weight: 700;
+    color: #ffffff;
+    left: -48px;
+    padding: 11px;
+    cursor: pointer;
+    background: #9999978a;
+  }
+}
+
+.imgUploadStatus{
+    padding: 6px 10px !important;
+    font-weight: 500;
+    font-size: small;
+    margin-bottom: 0px !important;
+}
+@media screen and (max-width: 767px) {
+  .imageCount{
+    position: relative;
+    top: -40px;
+    font-size: 20px;
+    z-index: 100;
+    font-weight: 700;
+    color: #ffffff;
+    background: #9999978a;
+    padding: 11px;
+    cursor: pointer;
+  }
+}
+

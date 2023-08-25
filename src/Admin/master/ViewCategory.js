@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Button, Col, Nav, Row } from "react-bootstrap";
-import { getLocalStorageData, useRedirect, PAGE_LIMIT } from "../../action/common";
+import { Alert, Col, Nav, Row } from "react-bootstrap";
+import { getLocalStorageData, useRedirect, PAGE_LIMIT,FILE_URL } from "../../action/common";
 import { Link, useLocation } from "react-router-dom";
 import { getAllCategory,deleteCategoryById } from "../../services/common.service";
 import { Pagination } from "react-bootstrap";
@@ -96,6 +96,7 @@ const ViewCategory=()=>{
                             <tr>
                                 <th>Sl No.</th>
                                 <th>Category</th>
+                                <th>Image</th>
                                 <th className="text-center" colSpan={2}>Action</th>
                             </tr>
                         </thead>
@@ -104,6 +105,7 @@ const ViewCategory=()=>{
                               return  <tr key={i}>
                                     <td>{++i}</td>
                                     <td>{val.category}</td>
+                                    <td><img  height="50px" src={ FILE_URL+'uploads/'+ val.image } alt="" /></td>
                                     <td align="center"><Link size="sm" title="Edit" to={`/admin/master/category/edit/${val._id}`} ><i className="fa fa-edit"></i></Link></td>
                                     <td align="center">
                                     <Link size="sm" title="Delete" onClick={()=>{deleteCategory(val._id,i)}} ><i className="fa fa-trash-alt"></i></Link></td>

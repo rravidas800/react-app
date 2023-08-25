@@ -16,15 +16,26 @@ const  Category=()=>{
     const [category,setCategory]=useState("");
     const [errorMessage,setErrorMessage]=useState("");
 
+
+    const handleFormField=()=>{
+
+    }
+
+
     const saveCategoy=(e)=>{
         e.preventDefault();
         let localStorageData=getLocalStorageData();
+        let formData=new FormData(e.currentTarget);
+        if(id)
+        {
+            formData.append('_id',id);
+        }
         
-        let formData={
+       /*  let formData={
             "category":category,
             "_id":id?id:"",
             "accessToken":localStorageData.accessToken
-        }
+        } */
         saveCategory(formData)
         .then(result=>{
             
@@ -51,7 +62,7 @@ const  Category=()=>{
         }
         await getAllCategory(seacrhParam)
         .then(result=>{
-            if(result.status=='success')
+            if(result.status==='success')
             {
                 setCategory(result.result[0].category);
             }
@@ -87,6 +98,12 @@ const  Category=()=>{
                                         <Form.Label column sm={4}>Category</Form.Label>
                                         <Col sm={8}><Form.Control type="text" name="category" onChange={(e)=>{setCategory(e.target.value)}}  value={category} placeholder="Category" /></Col>
                                     </Form.Group>
+                                    <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
+                                        <Form.Label column sm={4}>Image</Form.Label>
+                                        <Col sm={8}><Form.Control type="file" name="item_image" onChange={handleFormField} /></Col>
+                                    </Form.Group>
+                                    
+
                                     <Col className="ml-1" sm={8} md={{offset: 4 }}>
                                         <Button type="submit">{ id?'Update':'Submit' }</Button>
                                     </Col>

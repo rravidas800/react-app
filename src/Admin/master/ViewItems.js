@@ -30,6 +30,11 @@ const ViewItems=()=>{
     const [showContentDetails,setShowContentDetails]=useState(false);
     const [activeViewItem,setActiveViewItem]=useState("");
 
+    const initialUploadBtntext=<span><i className="fa fa-upload"></i> Upload Images</span>;
+    const [uploadBtnText,setUploadBtnText]=useState(initialUploadBtntext);
+    const [imgUploadStatus,setImgUploadStatus]=useState({status:false,type:'',msg:""});
+
+
 
     /*------------Upload Multiple files----------*/
     const [chooseMultipleFile,setchooseMultipleFile]=useState([]);
@@ -39,6 +44,7 @@ const ViewItems=()=>{
     }
 
     const uploadMultipleFiles=()=>{
+        setUploadBtnText(<span><i className="fa fa-spinner fa-spin"></i> Uploading...</span>);
         const formData=new FormData();
         for(let file of chooseMultipleFile)
         {
@@ -48,17 +54,22 @@ const ViewItems=()=>{
         setchooseMultipleFile([]);
         uploadMultipleImages(formData)
         .then(result=>{
+            setUploadBtnText(initialUploadBtntext);
             if(result)
             {
-                    
+                showItemDetails(activeViewItem);
+                fetchItemList(current_page); 
+                setImgUploadStatus({status:true,type:'success',msg:'Success! images uploaded successfully'})     
             }else
             {
-
+                setImgUploadStatus({status:true,type:'danger',msg:'Failed! failed to upload image'});  
             }
         })
         .catch(err=>{
-            console.log(err);
+            setImgUploadStatus({status:true,type:'danger',msg:err}) 
+            setUploadBtnText(initialUploadBtntext);
         })
+
 
     }
     /*--------------end--------------*/
@@ -74,6 +85,7 @@ const ViewItems=()=>{
 
     /*-------get Item Details---------*/
     const showItemDetails=async(itemId)=>{
+        setImgUploadStatus({status:false});
         setActiveViewItem("");
         setShowModal(true);
         setShowLoader(true);
@@ -142,7 +154,7 @@ const ViewItems=()=>{
         then(result=>{
             if(result)
             {
-                if((pageNo+1)==slNo)
+                if((pageNo+1)===slNo)
                 {
                     setCurrentPage(current_page-1);   
                 }else{
@@ -155,7 +167,7 @@ const ViewItems=()=>{
     }
 
     /*----- Open File choose on button click----*/
-    const chooseFile=()=>{
+    const chooseFile=(e)=>{
         inputFileRef.current.click();
     }
     /*---------------End-------------*/
@@ -171,8 +183,7 @@ const ViewItems=()=>{
         fetchItemList(current_page);
         if(chooseMultipleFile.length>0)
         {
-            console.log("file uploading....");
-            uploadMultipleFiles()
+            uploadMultipleFiles();
         }
     },[current_page,chooseMultipleFile])
     
@@ -193,7 +204,8 @@ const ViewItems=()=>{
         { (locationState && locationState.status.length>0) && <Alert variant="success" dismissible>{ locationState.message } </Alert> }
             <Row className="justify-content-md-center">
                 <Col lg="12">
-                    <table className="table table-bordered table-striped">
+                    <div className="table-responsive">
+                    <table  className="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>Sl No.</th>
@@ -212,11 +224,15 @@ const ViewItems=()=>{
                                     <td>{val.item_name}</td>
                                     <td>{val.price}</td>
                                     <td>
-                                        {(val.item_image!="") &&
-                                            val.item_image.map(imgList=>{
-                                                return <img  height="50px" key={imgList._id} src={ FILE_URL+'uploads/'+ imgList.image } />
+                                        {(val.item_image!=="") &&
+                                            val.item_image.map((imgList,index)=>{
+                                                if(index<=1)
+                                                {
+                                                    return <img  height="50px" key={imgList._id} src={ FILE_URL+'uploads/'+ imgList.image } onClick={()=>{showItemDetails(val._id)}} />
+                                                }
                                              })
                                         }
+                                        {(val.item_image.length>2) &&  <span className="imageCount"  onClick={()=>{showItemDetails(val._id)}} >+{val.item_image.length-2}</span>}
                                     </td>
                                     <td align="center"><Link size="sm" title="View"  onClick={()=>{showItemDetails(val._id)}}><i className="fa fa-eye"></i></Link></td>
                                     <td align="center"><Link size="sm" title="Edit" to={`/admin/master/item/edit/${val._id}`} ><i className="fa fa-edit"></i></Link></td>
@@ -226,6 +242,7 @@ const ViewItems=()=>{
                             }): <tr key={i}><td colSpan={6} align="center">No Record Found!</td></tr> }
                         </tbody>
                     </table>
+                    </div>
                     { itemsList.length>0 &&
                     <Pagination>
                             <Pagination.First onClick={() => handlePageClick(1)} />
@@ -260,7 +277,7 @@ const ViewItems=()=>{
                     <table className="table table-bordered table-striped">
                         <tbody>
                         <tr>
-                            <td>Item Name</td>
+                            <td width="15%">Item Name</td>
                             <td>{ itemDetailsModal.item_name?itemDetailsModal.item_name:"--" }</td>
                         </tr>
                         <tr>
@@ -278,13 +295,19 @@ const ViewItems=()=>{
                         <tr>
                             <th colSpan={2}>
                             <Row>
-                                <Col xs={9} >
+                                <Col xs={2} >
                                     <div className="pull-left" >Images</div> 
                                 </Col>
+                                <Col xs={7} >
+                                {imgUploadStatus.status &&
+                                    <Alert variant={imgUploadStatus.type} className="imgUploadStatus">{imgUploadStatus.msg}</Alert>
+                                }
+                                </Col>
+                                
                                 <Col>
                                     <form type="post" >
                                     <div className="pull-right">
-                                        <Button className="btn btn-success btn-sm" onClick={ chooseFile } >Upload More Images</Button>
+                                        <Button className="btn btn-success btn-sm" onClick={ chooseFile } >{ uploadBtnText }</Button>
                                         <input type="file" max={5} multiple ref={inputFileRef} onChange={handleFileUpload} style={{display: 'none'}} name="item_images[]" max={5} id="item_image_input_field" />
                                     </div>
                                     </form>
@@ -295,7 +318,7 @@ const ViewItems=()=>{
                         <tr>
                             <td colSpan={2}>
                             { (itemDetailsModal.item_image && itemDetailsModal.item_image.length>0) &&  itemDetailsModal.item_image.map((imgList,index)=>{
-                                return <img  key={index} height="100px" src={ FILE_URL+'uploads/'+ imgList.image } />
+                                return <div style={{float:"left",border:'1px solid #93b0f1a8',padding:'3px',margin: '2px'} }><div><img  key={index} height="100px" src={ FILE_URL+'uploads/'+ imgList.image }  /></div><div>Remove</div></div>
                             }) }
                             </td>
                         </tr>
