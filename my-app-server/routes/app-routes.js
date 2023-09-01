@@ -4,7 +4,7 @@ const jwt=require("jsonwebtoken");
 const category = require('../model/category');
 const Items=require('../model/items');
 const mongoose = require('mongoose');
-const { JWT_SECRET,verifyJwtToken } =require("../config/common");
+const { JWT_SECRET,verifyJwtToken,generateItemimageid } =require("../config/common");
 const multer=require('multer');
 
 const {fileUpload}=require("../middleware/fileupload");
@@ -39,7 +39,7 @@ routes.post("/item/:type",verifyJwtToken,async(req,res,next)=>{
                             price:req.body.price,
                             description:req.body.description
                         }
-                        console.log(updateParams);
+                        
                         Items.findByIdAndUpdate(req.body._id,updateParams)
                         .then(result=>{
                             return res.status(200).json({
@@ -65,7 +65,7 @@ routes.post("/item/:type",verifyJwtToken,async(req,res,next)=>{
                     if(req.file)
                     {
                         uploadedItemImageName=req.file.filename;
-                    
+                       
                         const itemData=new Items({
                             _id:new mongoose.Types.ObjectId,
                             item_name:req.body.item_name,
@@ -73,7 +73,7 @@ routes.post("/item/:type",verifyJwtToken,async(req,res,next)=>{
                             price:req.body.price,
                             description:req.body.description,
                             item_image:[{
-                                    _id:new mongoose.Types.ObjectId,
+                                    _id:1001,
                                     image:uploadedItemImageName
                                 }]
                         })
@@ -119,6 +119,38 @@ routes.post("/item/:type",verifyJwtToken,async(req,res,next)=>{
                             msg:"Something went worng. Try again later!"
                         });
                     }) 
+            }else if(req.params.type=='remove-image')
+            {
+                let item_id=req.body.item_id;
+                let image_id=req.body.image_id;
+                const filter = { _id: item_id };
+                const update = { $pull: { item_image: { _id: image_id } } };
+                
+                // Use findOneAndUpdate to update and return the modified document
+                Items.findOneAndUpdate(filter, update, { new: true })
+                .then((updatedItem) => {
+                    if (updatedItem) {
+                    return res.status(200).json({
+                        status: "success",
+                        result: "Image Removed",
+                    });
+                    } else {
+                    return res.status(404).json({
+                        status: "failed",
+                        message: "Item not found",
+                    });
+                    }
+                })
+                .catch((err) => {
+                    console.error(err);
+                    return res.status(500).json({
+                    status: "failed",
+                    err: err.message,
+                    });
+                });
+                    
+               
+                
             }
         
        
@@ -135,7 +167,7 @@ routes.post("/item/:type",verifyJwtToken,async(req,res,next)=>{
 /*--------Upload images for item-------*/
 routes.post("/upload-item-images",verifyJwtToken,(req,res,next)=>{
    
-    uploadMultipleImage(req,res,function(err){
+     uploadMultipleImage(req,res,async function(err){
                     
             if(err instanceof multer.MulterError) {
                 // A multer error occurred (e.g., file size exceeded or invalid file type)
@@ -147,12 +179,17 @@ routes.post("/upload-item-images",verifyJwtToken,(req,res,next)=>{
             
             if(req.files)
             { 
+                const item_id=req.body._id;
+               
+                const itemresult=  await Items.findById(item_id);
+                let newItemImageId =generateItemimageid(itemresult.item_image);
                 var itemImage=[];
                 for(let file of req.files)
                 {
-                    itemImage.push({_id:new mongoose.Types.ObjectId,image:file.filename})
+                    itemImage.push({_id:newItemImageId,image:file.filename})
+                    newItemImageId++;
                 }
-                const item_id=req.body._id;
+               
 
                 Items.updateOne({_id:item_id},{$push:{item_image:{$each:itemImage}}})
                 .then(result=>{

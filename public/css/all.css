@@ -4650,3 +4650,33 @@ readers do not read off random characters that represent icons */
   }
 }
 
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* .remove-button {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  display: block;
+  background: #2a2add38;
+  color: aliceblue;
+  padding: 37px 20px 37px 20px;
+  cursor: pointer;
+} */
+
+.remove-button {
+  position: absolute;
+    top: 3px;
+    right: 3px;
+    display: none;
+    background: #ed232c96;
+    color: aliceblue;
+    padding: 1px 7px 2px 7px;
+    cursor: pointer;
+}
+
+.image-container:hover .remove-button {
+  display: block;
+}

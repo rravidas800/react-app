@@ -20,6 +20,19 @@ const verifyJwtToken=(req,res,next)=>{
         })
     }
 }
+
+const generateItemimageid=(resultSet)=>{
+    console.log(resultSet);
+    const existingIds = resultSet.map((itemImage) => itemImage._id);
+    console.log(existingIds); 
+    
+    let newId = 1002;
+    while (existingIds.includes(newId)) {
+        newId++;
+    }
+    return newId;
+}
+
 module.exports={
-    JWT_SECRET,verifyJwtToken
+    JWT_SECRET,verifyJwtToken,generateItemimageid
 }

@@ -3,7 +3,7 @@ import { FILE_URL } from "../../action/common";
 import { Alert, Col, Nav, Row, Modal, Button } from "react-bootstrap";
 import { getLocalStorageData, useRedirect, PAGE_LIMIT } from "../../action/common";
 import { Link, useLocation } from "react-router-dom";
-import { getAllItems,deleteItemById,uploadMultipleImages } from "../../services/common.service";
+import { getAllItems,deleteItemById,uploadMultipleImages,removeItemImage } from "../../services/common.service";
 import { Pagination } from "react-bootstrap";
 
 
@@ -115,6 +115,29 @@ const ViewItems=()=>{
     }
     /*----------End---------*/
 
+
+    /*-------Remove Image-----------*/
+    const removeImage=(itemId,imageId)=>{
+        console.log(itemId,imageId);
+        let params={
+            item_id:itemId,
+            image_id:imageId
+        }
+        removeItemImage(params)
+        .then(result=>{
+            if(result){
+                showItemDetails(activeViewItem);
+                fetchItemList(current_page); 
+                setImgUploadStatus({status:true,type:'success',msg:'Success! images removed successfully'})
+            }else{
+                setImgUploadStatus({status:true,type:'danger',msg:'Failed! failed to remove image'});  
+            }
+        })
+        .catch(err=>{
+            setImgUploadStatus({status:true,type:'danger',msg:err}) 
+        })
+    }
+    /*-------end---------*/
 
     const fetchItemList=async(current_page)=>{
         let parmas={
@@ -298,17 +321,17 @@ const ViewItems=()=>{
                                 <Col xs={2} >
                                     <div className="pull-left" >Images</div> 
                                 </Col>
-                                <Col xs={7} >
+                                <Col xs={5} >
                                 {imgUploadStatus.status &&
                                     <Alert variant={imgUploadStatus.type} className="imgUploadStatus">{imgUploadStatus.msg}</Alert>
                                 }
                                 </Col>
                                 
-                                <Col>
+                                <Col xs={5} >
                                     <form type="post" >
-                                    <div className="pull-right">
+                                    <div style={{'textAlign': 'end'}}>
                                         <Button className="btn btn-success btn-sm" onClick={ chooseFile } >{ uploadBtnText }</Button>
-                                        <input type="file" max={5} multiple ref={inputFileRef} onChange={handleFileUpload} style={{display: 'none'}} name="item_images[]" max={5} id="item_image_input_field" />
+                                        <input type="file" max={5} multiple ref={inputFileRef} onChange={handleFileUpload} style={{display: 'none'}} name="item_images[]" id="item_image_input_field" />
                                     </div>
                                     </form>
                                 </Col>
@@ -318,10 +341,11 @@ const ViewItems=()=>{
                         <tr>
                             <td colSpan={2}>
                             { (itemDetailsModal.item_image && itemDetailsModal.item_image.length>0) &&  itemDetailsModal.item_image.map((imgList,index)=>{
-                                return <div style={{float:"left",border:'1px solid #93b0f1a8',padding:'3px',margin: '2px'} }><div><img  key={index} height="100px" src={ FILE_URL+'uploads/'+ imgList.image }  /></div><div>Remove</div></div>
+                                return <div key={index} className="image-container" style={{float:"left",border:'1px solid #93b0f1a8',padding:'3px',margin:'2px'} }><div><img className="item-image"   height="100px" src={ FILE_URL+'uploads/'+ imgList.image }  /></div><div title="Remove Image" className="remove-button" onClick={()=>{removeImage(itemDetailsModal._id,imgList._id)}}>X</div></div>
                             }) }
                             </td>
                         </tr>
+                        
                         </tbody>
                     </table>
                     </Col>

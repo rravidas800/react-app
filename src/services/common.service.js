@@ -149,3 +149,27 @@ export const uploadMultipleImages=async(formdata)=>{
         return false
     }
 }
+
+export const removeItemImage=(params)=>{
+    try{
+        let localStorage=getLocalStorageData();
+        const config={
+            headers:{'authorization':localStorage.accessToken}
+        }
+        return axios.post(API_URL+"item/remove-image",params,config)
+        .then(result=>{
+            if(result.data.status=='success')
+            {
+                return true;
+            }else{
+                return false;
+            }
+        })  
+        .catch(err=>{
+            return false;
+        })      
+    }catch(e){
+        return false;
+    }
+
+}
