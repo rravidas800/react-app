@@ -1,7 +1,7 @@
 import React, { useEffect, useState,useRef } from "react";
 import { FILE_URL } from "../../action/common";
 import { Alert, Col, Nav, Row, Modal, Button } from "react-bootstrap";
-import { getLocalStorageData, useRedirect, PAGE_LIMIT } from "../../action/common";
+import { useRedirect, PAGE_LIMIT } from "../../action/common";
 import { Link, useLocation } from "react-router-dom";
 import { getAllItems,deleteItemById,uploadMultipleImages,removeItemImage } from "../../services/common.service";
 import { Pagination } from "react-bootstrap";
@@ -74,7 +74,7 @@ const ViewItems=()=>{
     }
     /*--------------end--------------*/
 
-    let localStorageData=getLocalStorageData();
+    
 
     /*----Loader style----*/
     const loaderStyle={
@@ -170,8 +170,7 @@ const ViewItems=()=>{
 
     const deleteItems=(id,slNo)=>{
         const deleteParams={
-            "_id":id,
-            accessToken:localStorageData.accessToken
+            "_id":id           
         }
         deleteItemById(deleteParams).
         then(result=>{
@@ -180,6 +179,7 @@ const ViewItems=()=>{
                 if((pageNo+1)===slNo)
                 {
                     setCurrentPage(current_page-1);   
+                    setLocationState({status:"success",message:"Success! Item deleted successfully."})
                 }else{
                     fetchItemList(current_page); 
                 }
@@ -220,7 +220,7 @@ const ViewItems=()=>{
                 <Nav.Link   onClick={()=>{ handleRedirect("/admin/master/item") }} >Manage Item</Nav.Link>
             </Nav.Item>
             <Nav.Item>
-                <Nav.Link active onClick={()=>{ handleRedirect("/admin/master/item/view") }}>View Item</Nav.Link>
+                <Nav.Link active disabled>View Items</Nav.Link>
             </Nav.Item>
         </Nav>
         <div className="p-5">

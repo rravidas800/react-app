@@ -1,0 +1,119 @@
+.nav-container{
+    
+    padding-left: 3rem !important;
+    padding-right: 3rem !important;
+    padding-top: 0.5rem;
+    padding-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+.menu-container{
+    padding-top: 0px;
+    border-top: 1px solid #EDF1FF !important;
+    padding-left: 2rem !important;
+    
+}
+.menu-container2{
+    padding-top: 0px;
+    border-top: 1px solid #EDF1FF !important;
+    padding-bottom: 0px !important;
+   
+}
+.search-box-header{
+    padding-top: 0.5rem;
+}
+.text-right{
+    text-align: right;
+}
+.text-primary {
+    color: #D19C97 !important;
+     background-color: #fff !important;
+}
+.btn
+{
+    border-radius: 0%;
+}
+.website-logo{
+    font-weight: 700 !important;
+    
+
+}
+.text-decoration-none {
+    text-decoration: none !important;
+}
+a, a:hover{
+    color: #D19C97;
+    text-decoration: none;
+    background-color: transparent;
+}
+h1{
+  
+    color: #1C1C1C;
+
+}
+.font-weight-bold{
+    font-weight: 700 !important;
+}
+
+.header-search-box{
+    border-radius: 0%;
+    
+}
+.mr-1{
+    padding-bottom: 3px;
+}
+.cmp-name{
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+}
+
+a.bg-primary:hover, a.bg-primary:focus, button.bg-primary:hover, button.bg-primary:focus {
+    background-color: #c17a74 !important;
+}
+
+.justify-content-between {
+    background: #d19c97f2;
+    justify-content: space-between !important;
+    width: 100%;
+}
+
+.me-auto{
+    width: 100% !important;
+}
+.dropdown-toggle{
+    color: #1C1C1C;
+    height: 55px;
+    
+    padding: 15px 30px;
+   
+}
+
+.dropdown-menu{
+    border-radius: 0px;
+    width: 100%;
+    margin-top: 0px !important;
+}
+#categories-dropdown{
+    padding-left: 35px;
+}
+
+#categories-dropdown::after{
+    position: absolute !important;
+    right: 15px !important;
+    margin-top: 10px !important;
+    border-top: 0.5em solid;
+    border-right: 0.4em solid transparent;
+    border-bottom: 0;
+    border-left: 0.4em solid transparent;
+}
+
+.nav-menu-items{
+    padding: 15px 20px 15px 20px !important;
+    color: #1c1c1c;
+}
+.carousel {
+    position: relative;
+}
+.carousel-item{
+    height: 410px;
+}

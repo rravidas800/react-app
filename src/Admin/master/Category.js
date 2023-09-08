@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import { Alert, Form, Nav, Row } from "react-bootstrap";
 import Col from 'react-bootstrap/Col';
-import { getLocalStorageData, useRedirect } from "../../action/common";
+import { getLocalStorageData, useRedirect,FILE_URL } from "../../action/common";
 import {saveCategory, getAllCategory} from '../../services/common.service'; 
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -13,7 +13,7 @@ const  Category=()=>{
     
     let { handleRedirect } =useRedirect();
     const navigate=useNavigate();
-    const [category,setCategory]=useState("");
+    const [category,setCategory]=useState({});
     const [errorMessage,setErrorMessage]=useState("");
 
 
@@ -64,7 +64,7 @@ const  Category=()=>{
         .then(result=>{
             if(result.status==='success')
             {
-                setCategory(result.result[0].category);
+                setCategory(result.result[0]);
             }
         })
         .catch(err=>{
@@ -96,11 +96,15 @@ const  Category=()=>{
                             <Form method="post"  onSubmit={saveCategoy}>
                                     <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
                                         <Form.Label column sm={4}>Category</Form.Label>
-                                        <Col sm={8}><Form.Control type="text" name="category" onChange={(e)=>{setCategory(e.target.value)}}  value={category} placeholder="Category" /></Col>
+                                        <Col sm={8}><Form.Control type="text" name="category" onChange={(e)=>{setCategory(e.target.value)}}  value={category.category} placeholder="Category" /></Col>
                                     </Form.Group>
                                     <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
                                         <Form.Label column sm={4}>Image</Form.Label>
-                                        <Col sm={8}><Form.Control type="file" name="item_image" onChange={handleFormField} /></Col>
+                                        <Col sm={8}>
+                                            <Form.Control type="file" name="item_image" onChange={handleFormField} />
+                                           { (Object.keys(category).length>0 && category.image!="") && <div>
+                                            <img className="img-edit" src={ FILE_URL+'uploads/'+category.image} /></div> }
+                                        </Col>
                                     </Form.Group>
                                     
 

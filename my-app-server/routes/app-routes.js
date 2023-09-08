@@ -142,17 +142,34 @@ routes.post("/item/:type",verifyJwtToken,async(req,res,next)=>{
                     }
                 })
                 .catch((err) => {
-                    console.error(err);
                     return res.status(500).json({
-                    status: "failed",
-                    err: err.message,
+                        status: "failed",
+                        err: err.message,
                     });
                 });
-                    
-               
-                
+            }else if(req.params.type=='delete')
+            {
+                if(req.body._id)
+                {
+                    let updateParams={                        
+                      deleted:true
+                    }
+                    Items.findOneAndUpdate({_id:req.body._id},updateParams)
+                    .then(result=>
+                    {
+                        return res.status(200).json({
+                            status:success,
+                            message:"Success! Item deleted successfully."
+                        })
+                    })
+                    .catch(err=>{
+                        return res.status(200).json({
+                            status:"failed",
+                            message:"Failed! failed to delete item! try again later"
+                        })
+                    })
+                }
             }
-        
        
      }catch(err)
       {

@@ -1,12 +1,12 @@
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AppRoutes } from './routes';
-import { verifyAccessToken } from './action/common'
+/* import { verifyAccessToken } from './action/common' */
 
 
 
 function App() {
-   verifyAccessToken();
+  // verifyAccessToken();
    return (<AppRoutes/>);  
 }
 

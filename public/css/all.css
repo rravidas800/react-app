@@ -4680,3 +4680,10 @@ readers do not read off random characters that represent icons */
 .image-container:hover .remove-button {
   display: block;
 }
+
+.img-edit{
+  border: 2px solid #134fd763;
+    padding: 1px;
+    margin-top: 10px;
+    height: 70px;
+}

@@ -10,53 +10,63 @@ import Admin from "./layouts/Admin";
 import PageNotFound from "./layouts/PageNotFound"
 import { useRoutes } from 'react-router-dom';
 import ViewItems from "./Admin/master/ViewItems";
+import Website from "./layouts/Website";
+import Homepage from "./website/Homepage";
 
 export const AppRoutes =()=>{
     const routes=useRoutes([
     {
       path:"/",
-      element:<AuthLogin><Login/></AuthLogin>
+      element:<Website/>,
+      children:[
+        {
+          path:"/",
+          element:<Homepage/>
+        }
+      ]
     },
     {
-      path:"/login",
+      path:"/admin/login",
       element:<AuthLogin><Login/></AuthLogin>
     },
     {
         path:"/admin",
         element:<ProtectedRoutes><Admin/></ProtectedRoutes>,
-        children:[{
+        children:[
+          {
             path:"dashboard",
             element:<ProtectedRoutes><Dashboard/></ProtectedRoutes>,
-        },
-        {
-            path:"master",
-            element:'',
-            children:[{
-                        path:"category",
-                        element:<ProtectedRoutes><Category/></ProtectedRoutes>
-                      },
-                      {
-                        path:"category/view",
-                        element:<ProtectedRoutes><ViewCategory/></ProtectedRoutes>
-                      },
-                      {
-                          path:"category/edit/:id",
+          },
+          {
+              path:"master",
+              element:'',
+              children:[{
+                          path:"category",
                           element:<ProtectedRoutes><Category/></ProtectedRoutes>
-                      },
-                      {
-                        path:"item",
-                        element:<ProtectedRoutes><Items/></ProtectedRoutes>
-                      },
-                      {
-                        path:"item/edit/:id",
-                        element:<ProtectedRoutes><Items/></ProtectedRoutes>
-                      },
-                      {
-                        path:"item/view",
-                        element:<ProtectedRoutes><ViewItems/></ProtectedRoutes>
-                      }
-                ]
-        }]
+                        },
+                        {
+                          path:"category/view",
+                          element:<ProtectedRoutes><ViewCategory/></ProtectedRoutes>
+                        },
+                        {
+                            path:"category/edit/:id",
+                            element:<ProtectedRoutes><Category/></ProtectedRoutes>
+                        },
+                        {
+                          path:"item",
+                          element:<ProtectedRoutes><Items/></ProtectedRoutes>
+                        },
+                        {
+                          path:"item/edit/:id",
+                          element:<ProtectedRoutes><Items/></ProtectedRoutes>
+                        },
+                        {
+                          path:"item/view",
+                          element:<ProtectedRoutes><ViewItems/></ProtectedRoutes>
+                        }
+                  ]
+          }
+        ]
         
     },
     {

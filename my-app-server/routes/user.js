@@ -112,7 +112,7 @@ router.post("/verifytoken",(req,res,next)=>{
         }else{
             const token=jwt.sign({
                 data:decode.data
-            },'secret',{expiresIn:12*60});
+            },'secret',{expiresIn:7*60});
 
             if(token)
             {

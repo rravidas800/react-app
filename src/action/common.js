@@ -26,40 +26,51 @@ export const getLocalStorageData=()=>{
 
 export const getTokenRenewTime=()=>{
    const currentTime = new Date();
-   const minutesToAdd = 10;
+   const minutesToAdd = 7;
    return new Date(currentTime.getTime() + minutesToAdd * 60000);
 }
 
 
-export const verifyAccessToken=async()=>{
+/* export const verifyAccessToken=async()=>{
 
    if(localStorage.getItem('user')){
       const userSessionData=localStorage.getItem('user');
       const userData=JSON.parse(userSessionData);
       let currentTime=new Date();
       let accessTokenTime=new Date(userData.accessTokenRenewTime)
-      
-      if(accessTokenTime<=currentTime)
+      let currentTimeAfterFiveMinute=new Date(currentTime.getTime() + 4 * 60000);
+      console.log(accessTokenTime,"==",currentTime,"==",currentTimeAfterFiveMinute);
+      if(accessTokenTime<currentTimeAfterFiveMinute)
       {
+        
          await axios.post(API_URL+"verifytoken",{"accessToken":userData.accessToken})
          .then((result)=>{
          
             if(result.data.status==200)
             {
+               console.log("renew token");
                let tokenRenewTime=getTokenRenewTime();
                userData.accessTokenRenewTime=tokenRenewTime;
                userData.accessToken=result.data.accessToken;
                localStorage.setItem('user',JSON.stringify(userData));
+               return true;
             }else{
+               console.log(result.data);
                localStorage.removeItem('user');
+               return false;
             }  
          })
          .catch((err)=>{
+            localStorage.removeItem('user');
             console.log(err.message);
+            return false;
          })
+      }else{
+         console.log("loged in");
+         return true;
       }
    }
-}
+} */
 
 export const useRedirect=()=>{
    

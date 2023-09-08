@@ -103,10 +103,18 @@ export const getAllItems=async(params)=>{
         
         return await axios.post(API_URL+"item/view",params,config)
         .then(result=>{
-          
-            return result.data;
+            
+            if(result)
+            {
+                return result.data;
+            }else{
+                return false;        
+            }
+           
+            
         })
         .catch(err=>{
+            console.log("error=>",+err);
             return false;
         })
     }catch(e)
@@ -117,9 +125,18 @@ export const getAllItems=async(params)=>{
 
 export const deleteItemById=async(params)=>{
     try{
-        return await axios.post(API_URL+"item/delete",params)
+        let localStorageData=getLocalStorageData();
+        const config = {     
+            headers: { 'authorization': localStorageData.accessToken }
+        }
+        return await axios.post(API_URL+"item/delete",params,config)
         .then(result=>{
-            return true;
+            if(result.data.status=='success'){ 
+                return true;
+            }
+            else{
+                return true;
+            }
         })
         .catch(err=>{
             return false;

@@ -131,7 +131,7 @@ const Items=()=>{
     return (<div>
         <Nav variant="tabs" defaultActiveKey="/home">
             <Nav.Item>
-                <Nav.Link active  >Manage Item</Nav.Link>
+                <Nav.Link active disabled >Manage Item</Nav.Link>
             </Nav.Item>
             <Nav.Item>
                 <Nav.Link  onClick={()=>{ handleRedirect("/admin/master/item/view") }}>View Items</Nav.Link>
