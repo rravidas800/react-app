@@ -19,6 +19,7 @@ const Header=(props)=>{
                 <Navbar.Brand href='#' onClick={()=>{handleRedirect('/admin/dashboard')}} >My App</Navbar.Brand>
                 <Nav className="me-auto">
                         <NavDropdown title="Master" id="basic-nav-dropdown">
+                            <NavDropdown.Item onClick={()=>{ handleRedirect('/admin/master/banner') }}>Banner</NavDropdown.Item>
                             <NavDropdown.Item onClick={()=>{ handleRedirect('/admin/master/category') }}>Category</NavDropdown.Item>
                             <NavDropdown.Item onClick={()=>{ handleRedirect('/admin/master/item')}} >Item</NavDropdown.Item>
                             <NavDropdown.Divider />

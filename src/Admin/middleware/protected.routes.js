@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
  import { getTokenRenewTime } from "../../action/common";
  export const API_URL="http://localhost:5000/api/";
@@ -8,7 +8,7 @@ import axios from "axios";
 export default ({children,history})=>{
     
     const userSessionData=localStorage.getItem('user');
-    
+    const navigate = useNavigate();
     const [isTokenValid, setIsTokenValid] = useState(true);
 
     const verifyAccessToken=async()=>{
@@ -52,11 +52,12 @@ export default ({children,history})=>{
      }
     
     useEffect(() => {
-         
         verifyAccessToken();
         if (!isTokenValid) {
             console.log("invalid token"); 
-            return <Navigate to="/admin/login" replace />
+            navigate('/admin/login');
+            //<Navigate to="/admin/login" replace />;
+            return null;
         }
     }, [children,isTokenValid]);
     

@@ -3,6 +3,7 @@ const routes=express.Router();
 const jwt=require("jsonwebtoken");
 const category = require('../model/category');
 const Items=require('../model/items');
+const Banner=require("../model/banner");
 const mongoose = require('mongoose');
 const { JWT_SECRET,verifyJwtToken,generateItemimageid } =require("../config/common");
 const multer=require('multer');
@@ -14,6 +15,8 @@ const uploadMultipleImage=fileUpload.array('image',5);
 
 
 const itemImage = fileUpload.single('item_image');
+const bannerImage=fileUpload.single('banner_image');
+
 /*------API for magage item----------*/
 routes.post("/item/:type",verifyJwtToken,async(req,res,next)=>{
     try{
@@ -390,6 +393,98 @@ routes.post("/category/:type",verifyJwtToken,async(req,res,next)=>{
             });
         }
             
+})
+
+
+routes.post('/banner:type',verifyJwtToken,(req,res,next)=>{
+    if(type=='add')
+    {
+            bannerImage(req,res,function(err){
+                    if(err instanceof multer.MulterError) {
+                        // A multer error occurred (e.g., file size exceeded or invalid file type)
+                        return res.status(200).json({status:"failed",error: err.message, message: err.message});
+                    } else if (err) {
+                        // Some other error occurred
+                        return res.status(200).json({status:"failed",error: err.message, message: err.message});
+                    }
+                
+                    if(req.file)
+                    {
+                        uploadedBannerImage=req.file.filename;
+                        const bannerScheme=new Banner({
+                            _id:new mongoose.Types.ObjectId,
+                            title:req.body.title,
+                            description:req.body.description,
+                            banner_link:req.body.banner_link,
+                            banner_image:uploadedBannerImage
+                        })
+                        bannerScheme.save()
+                        .then(result=>{
+                            return res.status(200).json({
+                                "status":"success",
+                                msg:"Record saved successfully"
+                            })
+                        })
+                        .catch(err=>{
+                            return res.status(200).json({
+                                "status":"failed",
+                                "msg":"Failed to save record! try again later"
+                            })
+                        })
+                    }
+
+            })
+    }
+    else if(type=='update')
+    {
+        bannerImage(req,res,function(err){
+            if(err instanceof multer.MulterError) {
+                // A multer error occurred (e.g., file size exceeded or invalid file type)
+                return res.status(200).json({status:"failed",error: err.message, message: err.message});
+            } else if (err) {
+                // Some other error occurred
+                return res.status(200).json({status:"failed",error: err.message, message: err.message});
+            }
+            if(req.body._id)
+            {
+                const banner_id=req.body._id;
+                let updateData={};
+                if(req.file){
+                    updateData={
+                        title:req.body.title,
+                        description:req.body.description,
+                        banner_link:req.body.banner_link,
+                        banner_image:req.file.filename
+                    }
+                }else
+                {
+                    updateData={
+                        title:req.body.title,
+                        description:req.body.description,
+                        banner_link:req.body.banner_link
+                    }
+                }
+
+                Banner.findByIdAndUpdate(banner_id,updateData,{nre:true,runValidators:true})
+                .then(result=>{
+                    return res.status(200).json({
+                        status:"success",
+                        msg:"Record upddated successfully",
+                    })
+                })
+                .catch(err=>{
+                    return res.status(210).json({
+                        status:"failed",
+                        msg:"Failed to update Record! try again later"
+                    })
+                })
+
+            }
+        })
+    }else if(type=='view')
+    {
+        
+    }
 })
 
 module.exports=routes;

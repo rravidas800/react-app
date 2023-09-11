@@ -12,6 +12,7 @@ import { useRoutes } from 'react-router-dom';
 import ViewItems from "./Admin/master/ViewItems";
 import Website from "./layouts/Website";
 import Homepage from "./website/Homepage";
+import Banner from "./Admin/master/Banner";
 
 export const AppRoutes =()=>{
     const routes=useRoutes([
@@ -40,7 +41,12 @@ export const AppRoutes =()=>{
           {
               path:"master",
               element:'',
-              children:[{
+              children:[
+                        {
+                          path:"banner",
+                          element:<ProtectedRoutes><Banner/></ProtectedRoutes>
+                        },
+                        {
                           path:"category",
                           element:<ProtectedRoutes><Category/></ProtectedRoutes>
                         },
