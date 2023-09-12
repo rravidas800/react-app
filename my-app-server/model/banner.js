@@ -6,8 +6,9 @@ const BannerSchema=new mongoose.Schema({
     description:{type:String,require:true},
     banner_link:{type:String},
     banner_image:String,
-    publishStatus:{type:Boolean,default:false},
-    deletedStatus:{type:Boolean,default:false}
+    publish:{type:Boolean,default:false},
+    deleted:{type:Boolean,default:false},
+    createdOn:{type:Date,default:Date.now}
 })
 
 module.exports=mongoose.model("Banner",BannerSchema);

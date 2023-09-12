@@ -396,95 +396,125 @@ routes.post("/category/:type",verifyJwtToken,async(req,res,next)=>{
 })
 
 
-routes.post('/banner:type',verifyJwtToken,(req,res,next)=>{
-    if(type=='add')
-    {
-            bannerImage(req,res,function(err){
-                    if(err instanceof multer.MulterError) {
-                        // A multer error occurred (e.g., file size exceeded or invalid file type)
-                        return res.status(200).json({status:"failed",error: err.message, message: err.message});
-                    } else if (err) {
-                        // Some other error occurred
-                        return res.status(200).json({status:"failed",error: err.message, message: err.message});
-                    }
-                
-                    if(req.file)
-                    {
-                        uploadedBannerImage=req.file.filename;
-                        const bannerScheme=new Banner({
-                            _id:new mongoose.Types.ObjectId,
-                            title:req.body.title,
-                            description:req.body.description,
-                            banner_link:req.body.banner_link,
-                            banner_image:uploadedBannerImage
-                        })
-                        bannerScheme.save()
-                        .then(result=>{
-                            return res.status(200).json({
-                                "status":"success",
-                                msg:"Record saved successfully"
-                            })
-                        })
-                        .catch(err=>{
-                            return res.status(200).json({
-                                "status":"failed",
-                                "msg":"Failed to save record! try again later"
-                            })
-                        })
-                    }
+routes.post('/banner/:type',verifyJwtToken,async(req,res,next)=>{
+    
+ // try{
+    
+        if(req.params.type=='save')
+        {
+            
+                bannerImage(req,res,function(err){
+                        if(err instanceof multer.MulterError) {
+                            // A multer error occurred (e.g., file size exceeded or invalid file type)
+                            return res.status(200).json({status:"failed",error: err.message, message: err.message});
+                        } else if (err) {
+                            // Some other error occurred
+                            return res.status(200).json({status:"failed",error: err.message, message: err.message});
+                        }
+                        
+                        if(req.body._id)
+                        {
+                            const banner_id=req.body._id;
+                            let updateData={};
+                            if(req.file){
+                                updateData={
+                                    title:req.body.title,
+                                    description:req.body.description,
+                                    banner_link:req.body.banner_link,
+                                    banner_image:req.file.filename
+                                }
+                            }else
+                            {
+                                updateData={
+                                    title:req.body.title,
+                                    description:req.body.description,
+                                    banner_link:req.body.banner_link
+                                }
+                            }
 
-            })
-    }
-    else if(type=='update')
-    {
-        bannerImage(req,res,function(err){
-            if(err instanceof multer.MulterError) {
-                // A multer error occurred (e.g., file size exceeded or invalid file type)
-                return res.status(200).json({status:"failed",error: err.message, message: err.message});
-            } else if (err) {
-                // Some other error occurred
-                return res.status(200).json({status:"failed",error: err.message, message: err.message});
-            }
-            if(req.body._id)
-            {
-                const banner_id=req.body._id;
-                let updateData={};
-                if(req.file){
-                    updateData={
-                        title:req.body.title,
-                        description:req.body.description,
-                        banner_link:req.body.banner_link,
-                        banner_image:req.file.filename
-                    }
-                }else
-                {
-                    updateData={
-                        title:req.body.title,
-                        description:req.body.description,
-                        banner_link:req.body.banner_link
-                    }
-                }
+                            Banner.findByIdAndUpdate(banner_id,updateData,{nre:true,runValidators:true})
+                            .then(result=>{
+                                return res.status(200).json({
+                                    status:"success",
+                                    msg:"Record upddated successfully",
+                                })
+                            })
+                            .catch(err=>{
+                                return res.status(210).json({
+                                    status:"failed",
+                                    msg:"Failed to update Record! try again later"
+                                })
+                            })
 
-                Banner.findByIdAndUpdate(banner_id,updateData,{nre:true,runValidators:true})
-                .then(result=>{
+                        }else{
+                            if(req.file)
+                            {
+                                uploadedBannerImage=req.file.filename;
+                                const bannerScheme=new Banner({
+                                    _id:new mongoose.Types.ObjectId,
+                                    title:req.body.title,
+                                    description:req.body.description,
+                                    banner_link:req.body.banner_link,
+                                    banner_image:uploadedBannerImage
+                                })
+                                bannerScheme.save()
+                                .then(result=>{
+                                    return res.status(200).json({
+                                        "status":"success",
+                                        "message":"Record saved successfully"
+                                    })
+                                })
+                                .catch(err=>{
+                                    return res.status(200).json({
+                                        "status":"failed",
+                                        "message":"Failed to save record! try again later"
+                                    })
+                                })
+                            }else{
+                                return res.status(200).json({
+                                    "status":"failed",
+                                    "message":"Please upload banner image"
+                                })
+                            }
+                        }
+
+                })
+        }else if(req.params.type=='view')
+        {
+            let searchParam=req.body.searchParam;
+            const pageSize=req.body.limit?req.body.limit:0;
+            const pageNumber=req.body.pageNumber?req.body.pageNumber:1;
+            const skipCount=(pageNumber-1)*pageSize;
+            searchParam={...searchParam,deleted:0};
+
+            const totalRecord=await Banner.countDocuments(searchParam); 
+            Banner.find(searchParam).sort({createdOn:-1})
+            .skip(skipCount)
+            .limit(pageSize)
+            .then(result=>{
                     return res.status(200).json({
                         status:"success",
-                        msg:"Record upddated successfully",
+                        result:result,
+                        total_page:Math.ceil(totalRecord/pageSize)
                     })
-                })
-                .catch(err=>{
-                    return res.status(210).json({
+            })
+            .catch(err=>{
+                    return res.status(200).json({
                         status:"failed",
-                        msg:"Failed to update Record! try again later"
+                        msg:"something went wrong. try again later",
+                        error:err
                     })
-                })
+            })
 
-            }
+        }
+   // }
+   /*  catch(e){
+        return res.status(500).json({
+            "status":"failed",
+            "message":"Something went wrong! try again later",
+            "error":e.message
         })
-    }else if(type=='view')
-    {
-        
-    }
+    } */
 })
 
 module.exports=routes;

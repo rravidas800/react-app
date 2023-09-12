@@ -56,8 +56,7 @@ export default ({children,history})=>{
         if (!isTokenValid) {
             console.log("invalid token"); 
             navigate('/admin/login');
-            //<Navigate to="/admin/login" replace />;
-            return null;
+          
         }
     }, [children,isTokenValid]);
     

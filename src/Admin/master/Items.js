@@ -173,7 +173,7 @@ const Items=()=>{
                             <Row className="mb-3">
                                 <Form.Group as={Col} controlId="formGridCity">
                                     <Form.Label>Description</Form.Label>
-                                    <Form.Control as="textarea" rows={3} placeholder="Enter Description" name="description" onChange={handleFormField} defaultValue={itemData?itemData.description:""} />
+                                    <Form.Control as="textarea" rows={4} placeholder="Enter Description" name="description" onChange={handleFormField} defaultValue={itemData?itemData.description:""} />
                                 </Form.Group>
                             </Row>
                             <Row className="mb-3">
