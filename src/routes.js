@@ -13,6 +13,7 @@ import ViewItems from "./Admin/master/ViewItems";
 import Website from "./layouts/Website";
 import Homepage from "./website/Homepage";
 import Banner from "./Admin/master/Banner";
+import ViewBanner from "./Admin/master/ViewBanner";
 
 export const AppRoutes =()=>{
     const routes=useRoutes([
@@ -45,6 +46,14 @@ export const AppRoutes =()=>{
                         {
                           path:"banner",
                           element:<ProtectedRoutes><Banner/></ProtectedRoutes>
+                        },
+                        {
+                          path:"banner/edit/:id",
+                          element:<ProtectedRoutes><Banner/></ProtectedRoutes>
+                        },
+                        {
+                          path:"banner/view",
+                          element:<ProtectedRoutes><ViewBanner/></ProtectedRoutes>
                         },
                         {
                           path:"category",

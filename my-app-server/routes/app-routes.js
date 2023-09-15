@@ -436,13 +436,13 @@ routes.post('/banner/:type',verifyJwtToken,async(req,res,next)=>{
                             .then(result=>{
                                 return res.status(200).json({
                                     status:"success",
-                                    msg:"Record upddated successfully",
+                                    message:"Record updated successfully",
                                 })
                             })
                             .catch(err=>{
                                 return res.status(210).json({
                                     status:"failed",
-                                    msg:"Failed to update Record! try again later"
+                                    message:"Failed to update Record! try again later"
                                 })
                             })
 
@@ -486,7 +486,7 @@ routes.post('/banner/:type',verifyJwtToken,async(req,res,next)=>{
             const pageNumber=req.body.pageNumber?req.body.pageNumber:1;
             const skipCount=(pageNumber-1)*pageSize;
             searchParam={...searchParam,deleted:0};
-
+          
             const totalRecord=await Banner.countDocuments(searchParam); 
             Banner.find(searchParam).sort({createdOn:-1})
             .skip(skipCount)

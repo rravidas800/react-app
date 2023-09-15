@@ -196,10 +196,23 @@ export const saveBannerForm=async(formData)=>{
     const config={
         headers:{'authorization':localStorage.accessToken}
     }
-    console.log(formData);
     return await axios.post(API_URL+"banner/save",formData,config)
     .then(result=>{
        return result.data;
+    })
+    .catch(err=>{
+        return false;
+    })
+}
+
+export const getAllBanner=async(params)=>{
+   let localStorage=getLocalStorageData();
+    const config={
+        headers:{'authorization':localStorage.accessToken}
+    }
+    return await axios.post(API_URL+"banner/view",params,config)
+    .then(result=>{
+       return result.data
     })
     .catch(err=>{
         return false;
